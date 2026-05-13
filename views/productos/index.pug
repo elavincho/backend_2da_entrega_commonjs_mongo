@@ -1,0 +1,40 @@
+extends ../layout
+
+block contenido
+    h1 Stock Actual de Productos
+
+    div(style='text-align: right; margin-bottom: 15px;')
+            a.btn-nuevo(href='/productos/nuevo') + Registrar Producto
+
+    if productos.length > 0
+        table
+            thead
+                tr
+                    th ID
+                    th Nombre
+                    th Categoría
+                    th Precio
+                    th Stock Actual
+                    th Estado
+                    th Acciones
+            tbody
+                each prod in productos
+                    tr
+                        td(style="text-align: center;")= prod.id
+                        td= prod.nombre
+                        td= prod.categoria
+                        td(style="text-align: right;") $ #{prod.precio}
+                        td(style="text-align: center;")= prod.stockActual
+                        td
+                            if prod.stockActual <= prod.stockMinimo
+                                span(style="color: red; font-weight: bold; display:flex; text-align: center;") STOCK BAJO
+                            else
+                                span(style="color: green; font-weight: bold; display:flex; text-align: center;") STOCK OK
+                        td
+                            div.acciones-container 
+                                a(href=`/productos/editar/${prod.id}`) Editar
+
+                                form(action=`/productos/eliminar/${prod.id}`, method="POST" style="display:inline" onsubmit="return confirm('¿Está seguro que desea eliminar este producto?')")
+                                    button.btn-accion.btn-borrar(type="submit") Eliminar
+                else
+                    p No hay productos registrados en el sistema.

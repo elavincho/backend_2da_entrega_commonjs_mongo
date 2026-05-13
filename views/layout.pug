@@ -1,0 +1,23 @@
+doctype html
+html(lang="es")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    title #{titulo} | TodoStock S.A.
+    link(rel="stylesheet" href="/css/styles.css")
+  body
+    header
+      nav
+        ul
+          li: a(href="/") Home
+          li: a(href="/productos") Stock
+          li: a(href="/clientes") Clientes
+          li: a(href='/proveedores') Proveedores
+          li: a(href='/finanzas') Finanzas
+
+
+    main
+      block contenido
+
+    footer
+      p &copy; 2026 - Backend - TodoStock S.A. - Grupo 404 Solutions

@@ -1,0 +1,73 @@
+extends ../layout
+
+block contenido
+    h1 Resumen Financiero
+    
+    // Función para asegurar número en Pug
+    mixin formatNumber(value)
+        - let num = parseFloat(value);
+        - if (isNaN(num)) num = 0;
+        = num.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2})
+    
+    div(style="display: flex; gap: 15px; margin-bottom: 25px;")
+        div(style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 4px; text-align: center; background-color: #fff;")
+            h3(style="font-size: 0.9rem; color: #555; margin-bottom: 5px;") A Cobrar (Activo)
+            p(style="font-size: 1.1rem;")
+                span(style="color: #333;") $ 
+                span(style="color: green;")
+                    - let cobrar = parseFloat(totalCobrar);
+                    - if (isNaN(cobrar)) cobrar = 0;
+                    = cobrar.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2})
+        
+        div(style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 4px; text-align: center; background-color: #fff;")
+            h3(style="font-size: 0.9rem; color: #555; margin-bottom: 5px;") A Pagar (Pasivo)
+            p(style="font-size: 1.1rem;")
+                span(style="color: #333;") $ 
+                span(style="color: #cc0000;")
+                    - let pagar = parseFloat(totalPagar);
+                    - if (isNaN(pagar)) pagar = 0;
+                    = pagar.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2})
+            
+        div(style="flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 4px; text-align: center; background-color: #f9f9f9;")
+            h3(style="font-size: 0.9rem; color: #333; margin-bottom: 5px;") Balance Neto
+            p(style="font-size: 1.1rem;")
+                span(style="color: #333;") $ 
+                - let balance = parseFloat(balanceNeto);
+                - if (isNaN(balance)) balance = 0;
+                span(style=`color: ${balance > 0 ? 'green' : (balance < 0 ? '#cc0000' : '#333')}`)
+                    = balance.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2})
+
+    if registros && registros.length > 0
+        table
+            thead
+                tr
+                    th Entidad
+                    th Nombre
+                    th Tipo
+                    th Doc / CUIT
+                    th Saldo
+                    th Acciones
+            tbody
+                each reg in registros
+                    tr
+                        td= reg.entidad
+                        td= reg.nombre
+                        td= reg.tipo
+                        td= reg.nroDoc
+                        td(style=`color: ${reg.saldo > 0 ? 'green' : (reg.saldo < 0 ? '#cc0000' : '#333')}`)
+                            - let saldoAbs = Math.abs(parseFloat(reg.saldo) || 0);
+                            | $ #{saldoAbs.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2})} 
+                            if reg.saldo > 0
+                                | (a favor)
+                            else if reg.saldo < 0
+                                | (deuda)
+                            else
+                                | (al día)
+                        td
+                            div.acciones-container
+                                if reg.entidad === 'Cliente'
+                                    a(href=`/clientes/editar/${reg.id}`).btn-editar Ver Perfil
+                                else
+                                    a(href=`/proveedores/editar/${reg.id}`).btn-editar Ver Perfil
+    else
+        p No hay movimientos registrados en el sistema.

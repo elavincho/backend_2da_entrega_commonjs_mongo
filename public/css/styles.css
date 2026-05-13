@@ -1,0 +1,313 @@
+/* Configuración General */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #f4f7f6;
+    color: #333;
+    line-height: 1.6;
+}
+
+/* Navegación */
+header {
+    background: #2c3e50;
+    color: #fff;
+    padding: 1rem 0;
+    margin-bottom: 2rem;
+}
+
+nav ul {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+}
+
+nav ul li {
+    margin: 0 15px;
+}
+
+nav ul li a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+nav ul li a:hover {
+    color: #18bc9c;
+}
+
+main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+    background: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #2c3e50;
+}
+
+table,
+th,
+td {
+    border: 1px solid #000000;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: white;
+}
+
+th,
+td {
+    padding: 12px;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.acciones-container a,
+.acciones-container button {
+    display: inline-block;
+    padding: 6px 10px;
+    background-color: transparent;
+    color: #000;
+    text-decoration: none;
+    border: 1px solid #333;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    font-weight: normal;
+    line-height: 1;
+    text-align: center;
+}
+
+.acciones-container a:hover,
+.acciones-container button:hover {
+    background-color: #f0f0f0;
+    opacity: 0.7;
+}
+
+.acciones-container button {
+    border: 1px solid #cc0000;
+    color: #cc0000;
+}
+
+.acciones-container button:hover {
+    background-color: #f8d7da;
+}
+
+td div {
+    justify-content: center;
+    align-items: center;
+}
+
+/* --- SOLUCIÓN PARA EL PRECIO --- */
+table th:nth-child(4),
+table td:nth-child(4) {
+    white-space: nowrap;
+    min-width: 100px;
+}
+
+/* --- SOLUCIÓN PARA DOCUMENTO Y TELÉFONO --- */
+table th:nth-child(2),
+table td:nth-child(2),
+table th:nth-child(5),
+table td:nth-child(5) {
+    white-space: nowrap;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+form div {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+input,
+select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+button {
+    background-color: #18bc9c;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+button:hover {
+    background-color: #128f76;
+}
+
+.error-msg {
+    color: #721c24;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+    text-align: center;
+    font-weight: bold;
+    display: block;
+}
+
+/* Estilo para los botones de la tabla */
+td a,
+td button {
+    font-size: 0.9rem;
+    transition: opacity 0.2s;
+}
+
+td a:hover,
+td button:hover {
+    opacity: 0.7;
+}
+
+td div {
+    justify-content: center;
+    align-items: center;
+}
+
+/* Contenedor para los botones del formulario */
+.form-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+    align-items: center;
+}
+
+.btn-nuevo {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #18bc9c;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.btn-cancelar {
+    display: inline-block;
+    padding: 10px 20px;
+    color: #666;
+    text-decoration: none;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-weight: bold;
+    background-color: #f8f9fa;
+    transition: all 0.2s;
+    text-align: center;
+}
+
+.btn-cancelar:hover {
+    background-color: #e2e6ea;
+    color: #333;
+    border-color: #bbb;
+}
+
+
+.btn-guardar {
+    flex: 1;
+    background-color: #18bc9c;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.btn-guardar:hover {
+    background-color: #128f76;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    margin-top: 40px;
+    padding: 20px;
+    font-size: 0.9rem;
+    color: #7f8c8d;
+}
+
+
+
+/* Para que los botones editar y eliminar tengan el mismo tamaño */
+
+td div a,
+td div button {
+    width: 80px;
+    margin-top: 2px;
+}
+
+/* Para que los botones registar y cancelar tengan el mismo tamaño */
+
+form div button,
+form div a {
+    width: 200px;
+}
+
+/* Para que el label y el input del campo nombre tengan el mismo tamaño */
+#campo-nombre label,
+#campo-nombre input {
+    display: flex;
+    width: 100%;
+}
+
+/* Para que el label y el input dela razón social tengan el mismo tamaño */
+#campo-razonSocial label,
+#campo-razonSocial input {
+    display: flex;
+    width: 100%;
+    text-align: center;
+}
+
+.contenedor {
+    display: flex;
+    flex-wrap: wrap;
+    border-radius: 5px;
+    /* background-image: url('/img/business.jpg'); */
+    background-image: url('/img/finanzas.webp');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    min-height: 500px;
+    justify-content: space-evenly;
+    align-items: center;
+    gap: 15px;
+}
+
