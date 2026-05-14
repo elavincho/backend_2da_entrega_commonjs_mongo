@@ -311,3 +311,39 @@ form div a {
     gap: 15px;
 }
 
+
+/* Estilos para Orden de Pago */
+
+.estatus-anulado {
+    background-color: #f8d7da;
+}
+
+.estatus-pagado {
+    background-color: #d4edda;
+}
+
+.estatus-pendiente {
+    background-color: #fff3cd;
+}
+
+.badge {
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.badge-pendiente {
+    background-color: #ffc107;
+    color: #333;
+}
+
+.badge-pagado {
+    background-color: #28a745;
+    color: white;
+}
+
+.badge-anulado {
+    background-color: #dc3545;
+    color: white;
+}

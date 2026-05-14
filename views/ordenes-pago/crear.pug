@@ -1,0 +1,117 @@
+extends ../layout
+
+block contenido
+  h1= titulo
+
+  if error
+    .error-msg= error
+
+  form(action="/ordenes-pago/nuevo" method="POST" id="formOrdenPago")
+    // Información del Proveedor
+    fieldset
+      legend Datos del Proveedor
+      div
+        label(for="proveedorId") Proveedor:
+        select(name="proveedorId" id="proveedorId" required)
+          option(value="") Seleccione un proveedor
+          each proveedor in proveedores
+            option(value=proveedor.id selected=(datos && datos.proveedorId == proveedor.id))
+              | #{proveedor.tipoDoc === 'DNI' ? proveedor.nombre : proveedor.razonSocial} - #{proveedor.nroDoc}
+
+      div
+        label(for="formaPago") Forma de Pago:
+        select(name="formaPago" id="formaPago" required)
+          option(value="Transferencia") Transferencia
+          option(value="Efectivo") Efectivo
+          option(value="Cheque") Cheque
+          option(value="Tarjeta") Tarjeta
+
+      div
+        label(for="referencia") Referencia:
+        input(type="text" name="referencia" id="referencia" value=datos ? datos.referencia : '')
+
+      div
+        label(for="bancoCuenta") Banco/Cuenta:
+        input(type="text" name="bancoCuenta" id="bancoCuenta" value=datos ? datos.bancoCuenta : '')
+
+      div
+        label(for="fechaPago") Fecha de Pago:
+        input(type="date" name="fechaPago" id="fechaPago" required value=datos ? datos.fechaPago : new Date().toISOString().split('T')[0])
+
+    // Conceptos
+    fieldset
+      legend Conceptos
+      table#conceptosTable
+        thead
+          tr
+            th Código Concepto
+            th Descripción
+            th Debe
+            th Haber
+            th Impuesto
+            th Monto Impuesto
+            th Neto Renglón
+            th
+        tbody
+          tr
+            td: input(type="text" name="conceptos[codigoConcepto][]" required)
+            td: input(type="text" name="conceptos[descripcion][]" required)
+            td: input(type="number" step="0.01" name="conceptos[debe][]" value="0" class="calcular")
+            td: input(type="number" step="0.01" name="conceptos[haber][]" value="0" class="calcular")
+            td: select(name="conceptos[impuesto][]")
+              option(value="EXE") EXE
+              option(value="IVA 21%") IVA 21%
+              option(value="IVA 10.5%") IVA 10.5%
+            td: input(type="number" step="0.01" name="conceptos[montoImpuesto][]" value="0" class="calcular")
+            td: input(type="number" step="0.01" name="conceptos[netoRenglon][]" readonly class="neto-renglon")
+            td: button(type="button" onclick="eliminarRenglon(this)") Eliminar
+
+      button(type="button" onclick="agregarRenglon()") + Agregar Concepto
+
+    // Totales
+    fieldset
+      legend Totales
+      div
+        label Subtotal Debe:
+        input(type="text" id="subtotalDebe" readonly)
+      div
+        label Subtotal Haber:
+        input(type="text" id="subtotalHaber" readonly)
+      div
+        label Subtotal Impuesto:
+        input(type="text" id="subtotalImpuesto" readonly)
+      div
+        label Subtotal Neto:
+        input(type="text" id="subtotalNeto" readonly)
+      div
+        label Retención:
+        input(type="number" step="0.01" name="totalRetencion" id="totalRetencion" value="0" onchange="calcularMontoAPagar()")
+      div
+        label Monto a Pagar:
+        input(type="number" step="0.01" name="montoAPagar" id="montoAPagar" readonly required)
+
+    // Observaciones y Firmas
+    fieldset
+      legend Observaciones y Firmas
+      div
+        label Observaciones:
+        textarea(name="observaciones" rows="3")= datos ? datos.observaciones : '' 
+      div
+        label Elaborado Por:
+        input(type="text" name="elaboradoPor" value=datos ? datos.elaboradoPor : '')
+      div
+        label Aprobado Por:
+        input(type="text" name="aprobadoPor" value=datos ? datos.aprobadoPor : '')
+      div
+        label Recibí Conforme:
+        input(type="text" name="recibioConforme" value=datos ? datos.recibioConforme : '')
+      div
+        label N° Cédula:
+        input(type="text" name="cedula" value=datos ? datos.cedula : '')
+
+    div.form-actions
+      button(type="submit") Generar Orden de Pago
+      a(href="/ordenes-pago") Cancelar
+
+  block scripts
+    script(src="/js/script.js")

@@ -9,6 +9,7 @@ const rutasProductos = require("./routes/productoRoutes");
 const clienteRoutes = require("./routes/clienteRoutes");
 const proveedorRoutes = require("./routes/proveedorRoutes");
 const finanzasRoutes = require("./routes/finanzasRoutes");
+const ordenPagoRoutes = require("./routes/ordenPagoRoutes");
 
 // Conectar a MongoDB
 connectDB();
@@ -28,6 +29,7 @@ app.use("/productos", rutasProductos);
 app.use("/clientes", clienteRoutes);
 app.use("/proveedores", proveedorRoutes);
 app.use("/finanzas", finanzasRoutes);
+app.use("/ordenes-pago", ordenPagoRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
