@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const path = require("path");
 const connectDB = require("./config/database");
-require('dotenv').config();
+require("dotenv").config();
 
 const homeRoutes = require("./routes/homeRoutes");
 const rutasProductos = require("./routes/productoRoutes");
@@ -10,6 +10,7 @@ const clienteRoutes = require("./routes/clienteRoutes");
 const proveedorRoutes = require("./routes/proveedorRoutes");
 const finanzasRoutes = require("./routes/finanzasRoutes");
 const ordenPagoRoutes = require("./routes/ordenPagoRoutes");
+const facturaProveedorRoutes = require("./routes/facturaProveedorRoutes");
 
 // Conectar a MongoDB
 connectDB();
@@ -30,6 +31,7 @@ app.use("/clientes", clienteRoutes);
 app.use("/proveedores", proveedorRoutes);
 app.use("/finanzas", finanzasRoutes);
 app.use("/ordenes-pago", ordenPagoRoutes);
+app.use("/facturas-proveedor", facturaProveedorRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

@@ -134,7 +134,7 @@ form {
     display: flex;
     flex-direction: column;
     gap: 15px;
-    max-width: 500px;
+    max-width: 800px;
     margin: 0 auto;
 }
 
@@ -314,7 +314,7 @@ form div a {
 
 /* Estilos para Orden de Pago */
 
-.estatus-anulado {
+/* .estatus-anulado {
     background-color: #f8d7da;
 }
 
@@ -324,7 +324,7 @@ form div a {
 
 .estatus-pendiente {
     background-color: #fff3cd;
-}
+} */
 
 .badge {
     padding: 5px 10px;
@@ -346,4 +346,42 @@ form div a {
 .badge-anulado {
     background-color: #dc3545;
     color: white;
+}
+
+/* Estilos para Facturación Proveedores */
+
+
+/* .estatus-anulado {
+    background-color: #f8d7da;
+}
+
+.estatus-pagado {
+    background-color: #d4edda;
+}
+
+.estatus-pendiente {
+    background-color: #fff3cd;
+} */
+
+.badge {
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.badge-pendiente {
+    background-color: #ffc107;
+    color: #333;
+}
+
+.badge-pagada {
+    background-color: #28a745;
+    color: white;
+}
+
+.badge-anulada {
+    background-color: #dc3545;
+    color: white;
+    grid-template-columns: 1fr 1fr;
 }
