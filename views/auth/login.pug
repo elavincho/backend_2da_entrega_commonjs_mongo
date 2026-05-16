@@ -1,0 +1,51 @@
+doctype html
+html
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    title= titulo
+    link(rel="stylesheet" href="/css/styles.css")
+    
+
+  body
+    .login-container
+      .login-header
+        h1.sub-titulo TodoStock S.A.
+        br
+        br
+        br
+        br
+        br
+        h1.sub-titulo Sistema de Gestión
+
+      .login-body
+        if error
+          .error-message= error
+
+        if mensajeExito
+          .success-message= mensajeExito
+
+        form(action="/login" method="POST")
+          .form-group
+            label(for="username") Usuario o Email
+            input(type="text" 
+              id="username" 
+              name="username" 
+              required 
+              autofocus
+              placeholder="Ingrese su usuario o email"
+              value=datos ? datos.username : '')
+
+          .form-group
+            label(for="password") Contraseña
+            input(type="password" 
+              id="password" 
+              name="password" 
+              required
+              placeholder="Ingrese su contraseña")
+
+          button(type="submit" class="btn-login") Iniciar Sesión
+
+        .register-link
+          | ¿No tienes una cuenta? 
+          a(href="/register") Regístrate aquí

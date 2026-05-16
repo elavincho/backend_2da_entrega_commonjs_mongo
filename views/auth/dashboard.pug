@@ -1,0 +1,57 @@
+extends ../layout
+
+block contenido
+  
+  .welcome-banner
+    h1 ¡Bienvenido, #{usuario.nombreCompleto}!
+    h2.sub-titulo Has iniciado sesión como <strong>#{usuario.rol}
+    //- h2.sub-titulo Has iniciado sesión como <strong>Administrador
+
+    br
+
+    .dashboard-cards
+      .card
+        .card-icon 📦
+        .card-value= totalProductos
+        .card-title Productos
+      .card
+        .card-icon 👥
+        .card-value= totalClientes
+        .card-title Clientes
+      .card
+        .card-icon 🏭
+        .card-value= totalProveedores
+        .card-title Proveedores
+      .card
+        .card-icon 💰
+        .card-value= totalOrdenesPago
+        .card-title Órdenes de Pago
+      .card
+        .card-icon 📄
+        .card-value= facturasPendientes
+        .card-title Facturas Pendientes
+
+  if ultimasOrdenes && ultimasOrdenes.length > 0
+    .recent-orders
+      h3 Últimas Órdenes de Pago
+      table
+        thead
+          tr
+            th N° Orden
+            th Proveedor
+            th Fecha
+            th Monto
+            th Estatus
+        tbody
+          each orden in ultimasOrdenes
+            tr
+              td= orden.numero
+              td= orden.proveedorInfo.nombre
+              td= orden.fechaEmision.toLocaleDateString('es-AR')
+              td $ #{orden.montoAPagar.toLocaleString('es-AR', {minimumFractionDigits: 2})}
+              td= orden.estatus
+  else
+    p No hay órdenes de pago recientes
+
+  .text-center(style="margin-top: 30px;")
+    a(href="/logout" class="btn-logout") Cerrar Sesión
