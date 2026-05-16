@@ -151,3 +151,118 @@ document.addEventListener("DOMContentLoaded", function () {
     .getElementById("otrosTributos")
     .addEventListener("change", recalcularTotales);
 });
+
+// JS crear ordenes de pago
+
+const proveedorSelect = document.getElementById("proveedorId");
+const cargarFacturasBtn = document.getElementById("cargarFacturas");
+const facturasContainer = document.getElementById("facturasContainer");
+const facturasListado = document.getElementById("facturasListado");
+const seleccionarTodasCheckbox = document.getElementById("seleccionarTodas");
+const totalSeleccionadoSpan = document.getElementById("totalSeleccionado");
+const montoAPagarInput = document.getElementById("montoAPagar");
+
+let facturasActuales = [];
+
+// Cargar facturas pendientes del proveedor
+cargarFacturasBtn.addEventListener("click", async () => {
+  const proveedorId = proveedorSelect.value;
+  if (!proveedorId) {
+    alert("Por favor, seleccione un proveedor primero");
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      `/ordenes-pago/facturas-pendientes/${proveedorId}`,
+    );
+    const data = await response.json();
+
+    if (data.success && data.facturas.length > 0) {
+      facturasActuales = data.facturas;
+      mostrarFacturas(data.facturas);
+      facturasContainer.style.display = "block";
+    } else {
+      facturasListado.innerHTML =
+        '<p style="color: #999;">No hay facturas pendientes para este proveedor</p>';
+      facturasContainer.style.display = "block";
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    alert("Error al cargar facturas");
+  }
+});
+
+function mostrarFacturas(facturas) {
+  if (!facturas || facturas.length === 0) {
+    facturasListado.innerHTML = "<p>No hay facturas pendientes</p>";
+    return;
+  }
+
+  let html = `
+        <table style="width: 100%; border-collapse: collapse;">
+          <thead>
+            <tr style="background-color: #f2f2f2;">
+              <th style="padding: 8px; border: 1px solid #ddd;">Sel.</th>
+              <th style="padding: 8px; border: 1px solid #ddd;">N° Factura</th>
+              <th style="padding: 8px; border: 1px solid #ddd;">Fecha</th>
+              <th style="padding: 8px; border: 1px solid #ddd;">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+  facturas.forEach((factura) => {
+    const fecha = new Date(factura.fechaEmision).toLocaleDateString("es-AR");
+    html += `
+          <tr>
+            <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">
+              <input type="checkbox" name="facturasSeleccionadas" value="${factura.id}" data-total="${factura.total}" class="factura-checkbox">
+            </td>
+            <td style="padding: 8px; border: 1px solid #ddd;">${factura.numero}</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">${fecha}</td>
+            <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">$${factura.total.toLocaleString("es-AR", { minimumFractionDigits: 2 })}</td>
+          </tr>
+        `;
+  });
+
+  html += `</tbody></table>`;
+  facturasListado.innerHTML = html;
+
+  // Agregar event listeners a los checkboxes
+  document.querySelectorAll(".factura-checkbox").forEach((cb) => {
+    cb.addEventListener("change", recalcularTotal);
+  });
+
+  recalcularTotal();
+}
+
+function recalcularTotal() {
+  let total = 0;
+  document.querySelectorAll(".factura-checkbox:checked").forEach((cb) => {
+    total += parseFloat(cb.dataset.total) || 0;
+  });
+  totalSeleccionadoSpan.textContent = total.toLocaleString("es-AR", {
+    minimumFractionDigits: 2,
+  });
+  montoAPagarInput.value = total.toFixed(2);
+}
+
+// Seleccionar todas
+seleccionarTodasCheckbox.addEventListener("change", () => {
+  const checkboxes = document.querySelectorAll(".factura-checkbox");
+  checkboxes.forEach((cb) => {
+    cb.checked = seleccionarTodasCheckbox.checked;
+  });
+  recalcularTotal();
+});
+
+// Al cambiar proveedor, ocultar facturas
+proveedorSelect.addEventListener("change", () => {
+  facturasContainer.style.display = "none";
+  facturasListado.innerHTML =
+    '<p>Seleccione un proveedor y haga clic en "Cargar Facturas"</p>';
+  seleccionarTodasCheckbox.checked = false;
+  totalSeleccionadoSpan.textContent = "0.00";
+  montoAPagarInput.value = "";
+});

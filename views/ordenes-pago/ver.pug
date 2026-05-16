@@ -37,7 +37,7 @@
 //-     .estatus-Pendiente { background-color: #ffc107; color: #333; }
 //-     .estatus-Pagado { background-color: #28a745; color: white; }
 //-     .estatus-Anulado { background-color: #dc3545; color: white; }
-  
+
 //-   .orden-pago
 //-     .header
 //-       .empresa-nombre TodoStock S.A.
@@ -45,9 +45,9 @@
 //-       .empresa-info Dirección: Av. Libertador 1000 - Avellaneda - Bs. As. - Argentina.
 //-       .empresa-info Teléfono: +54 11 2222 3333
 //-       .empresa-info info@todostocksa.com.ar
-    
+
 //-     .titulo-orden ORDEN DE PAGO
-    
+
 //-     .info-grid
 //-       .info-box
 //-         div
@@ -62,7 +62,7 @@
 //-         div
 //-           strong Número: 
 //-           | #{String(orden.numero).padStart(10, '0')}
-      
+
 //-       .info-box
 //-         div
 //-           strong Beneficiario/Proveedor: 
@@ -76,7 +76,7 @@
 //-         div
 //-           strong Teléfono: 
 //-           | #{orden.proveedorInfo.telefono || 'N/A'}
-    
+
 //-     // Tabla de conceptos
 //-     table
 //-       thead
@@ -98,7 +98,7 @@
 //-             td= concepto.impuesto
 //-             td= concepto.montoImpuesto.toLocaleString('es-AR', {minimumFractionDigits: 2})
 //-             td= concepto.netoRenglon.toLocaleString('es-AR', {minimumFractionDigits: 2})
-    
+
 //-     // Subtotales
 //-     table
 //-       tr
@@ -107,7 +107,7 @@
 //-         td= orden.subtotalHaber.toLocaleString('es-AR', {minimumFractionDigits: 2})
 //-         td= orden.subtotalImpuesto.toLocaleString('es-AR', {minimumFractionDigits: 2})
 //-         td= orden.subtotalNeto.toLocaleString('es-AR', {minimumFractionDigits: 2})
-    
+
 //-     // Formas de pago
 //-     if orden.formasPago && orden.formasPago.length > 0
 //-       table
@@ -126,7 +126,7 @@
 //-               td= pago.bancoCuenta || '-'
 //-               td= new Date(pago.fecha).toLocaleDateString('es-AR')
 //-               td= pago.montoNeto.toLocaleString('es-AR', {minimumFractionDigits: 2})
-    
+
 //-     // Totales finales
 //-     .totales
 //-       div
@@ -142,13 +142,13 @@
 //-       div
 //-         strong Monto a Pagar: 
 //-         | $ #{orden.montoAPagar.toLocaleString('es-AR', {minimumFractionDigits: 2})}
-    
+
 //-     // Observaciones
 //-     if orden.observaciones
 //-       .observaciones
 //-         strong Observaciones:
 //-         p= orden.observaciones
-    
+
 //-     // Firmas
 //-     .firmas
 //-   .firma-linea
@@ -158,7 +158,7 @@
 //-       strong= orden.elaboradoPor
 //-     hr
 //-     | #{orden.elaboradoPor || '_______________'}
-  
+
 //-   .firma-linea
 //-     | Aprobado Por
 //-     if orden.aprobadoPor
@@ -166,7 +166,7 @@
 //-       strong= orden.aprobadoPor
 //-     hr
 //-     | #{orden.aprobadoPor || '_______________'}
-  
+
 //-   .firma-linea
 //-     | Recibí Conforme
 //-     if orden.recibioConforme
@@ -183,7 +183,7 @@
 //-       strong= orden.cedula
 //-     hr
 //-     | #{orden.cedula || '_______________'}
-  
+
 //-   .firma-linea
 //-     | Nombre Legible
 //-     if orden.recibioConforme
@@ -191,10 +191,10 @@
 //-       strong= orden.recibioConforme
 //-     hr
 //-     | #{orden.recibioConforme || '_______________'}
-    
+
 //-     .footer(style="margin-top: 20px; text-align: center; font-size: 0.7rem; border-top: 1px solid #ccc; padding-top: 10px;")
 //-       | https://todostocksa.com.ar 
-  
+
 //-   // Botones de acción
 //-   .no-print(style="text-align: center; margin-top: 20px;")
 //-     button(onclick="window.print()" style="margin-right: 10px;") 🖨️ Imprimir
@@ -240,7 +240,7 @@ block contenido
     .estatus-Pendiente { background-color: #ffc107; color: #333; }
     .estatus-Pagado { background-color: #28a745; color: white; }
     .estatus-Anulado { background-color: #dc3545; color: white; }
-  
+
   .orden-pago
     .header
       .empresa-nombre TodoStock S.A.
@@ -248,9 +248,9 @@ block contenido
       .empresa-info Dirección: Av. Libertador 1000 - Avellaneda - Bs. As. - Argentina.
       .empresa-info Teléfono: +54 11 2222 3333
       .empresa-info info@todostock.com.ar
-    
+
     .titulo-orden ORDEN DE PAGO
-    
+
     .info-grid
       .info-box
         div
@@ -265,7 +265,7 @@ block contenido
         div
           strong Número: 
           | #{String(orden.numero).padStart(10, '0')}
-      
+
       .info-box
         div
           strong Beneficiario/Proveedor: 
@@ -279,37 +279,56 @@ block contenido
         div
           strong Teléfono: 
           | #{orden.proveedorInfo.telefono || 'N/A'}
-    
+
     // Tabla de conceptos
-    table
-      thead
-        tr
-          th Concepto
-          th Descripción
-          th Debe
-          th Haber
-          th Impuesto
-          th Monto
-          th Neto
-      tbody
-        each concepto in orden.conceptos
-          tr
-            td.text-left= concepto.codigoConcepto
-            td.text-left= concepto.descripcion
-            td= concepto.debe.toLocaleString('es-AR', {minimumFractionDigits: 2})
-            td= concepto.haber.toLocaleString('es-AR', {minimumFractionDigits: 2})
-            td= concepto.impuesto
-            td= concepto.montoImpuesto.toLocaleString('es-AR', {minimumFractionDigits: 2})
-            td= concepto.netoRenglon.toLocaleString('es-AR', {minimumFractionDigits: 2})
-    
+    //- table
+    //-   thead
+    //-     tr
+    //-       th Concepto
+    //-       th Descripción
+    //-       th Debe
+    //-       th Haber
+    //-       th Impuesto
+    //-       th Monto
+    //-       th Neto
+    //-   tbody
+    //-     each concepto in orden.conceptos
+    //-       tr
+    //-         td.text-left= concepto.codigoConcepto
+    //-         td.text-left= concepto.descripcion
+    //-         td= concepto.debe.toLocaleString('es-AR', {minimumFractionDigits: 2})
+    //-         td= concepto.haber.toLocaleString('es-AR', {minimumFractionDigits: 2})
+    //-         td= concepto.impuesto
+    //-         td= concepto.montoImpuesto.toLocaleString('es-AR', {minimumFractionDigits: 2})
+    //-         td= concepto.netoRenglon.toLocaleString('es-AR', {minimumFractionDigits: 2})
+
     // Subtotales
-    table
-      tr
-        th Subtotales
-        td= orden.subtotalDebe.toLocaleString('es-AR', {minimumFractionDigits: 2})
-        td= orden.subtotalHaber.toLocaleString('es-AR', {minimumFractionDigits: 2})
-        td= orden.subtotalImpuesto.toLocaleString('es-AR', {minimumFractionDigits: 2})
-        td= orden.subtotalNeto.toLocaleString('es-AR', {minimumFractionDigits: 2})
+    //- table
+    //-   tr
+    //-     th Subtotales
+    //-     td= orden.subtotalDebe.toLocaleString('es-AR', {minimumFractionDigits: 2})
+    //-     td= orden.subtotalHaber.toLocaleString('es-AR', {minimumFractionDigits: 2})
+    //-     td= orden.subtotalImpuesto.toLocaleString('es-AR', {minimumFractionDigits: 2})
+    //-     td= orden.subtotalNeto.toLocaleString('es-AR', {minimumFractionDigits: 2})
+
+    // Facturas pagadas
+    if facturasRelacionadas && facturasRelacionadas.length > 0
+      fieldset
+      legend Facturas Pagadas
+      table
+        thead
+          tr
+            th N° Factura
+            th Fecha
+            th Total
+        tbody
+          each factura in facturasRelacionadas
+            tr
+              td= factura.numero
+              td= factura.fecha ? factura.fecha.toLocaleDateString('es-AR') : '-'
+              td $ #{factura.total.toLocaleString('es-AR', {minimumFractionDigits: 2})}
+
+    br
     
     // Formas de pago
     if orden.formasPago && orden.formasPago.length > 0
@@ -329,7 +348,9 @@ block contenido
               td= pago.bancoCuenta || '-'
               td= new Date(pago.fecha).toLocaleDateString('es-AR')
               td= pago.montoNeto.toLocaleString('es-AR', {minimumFractionDigits: 2})
-    
+
+    br
+
     // Totales finales
     .totales
       div
@@ -345,13 +366,14 @@ block contenido
       div
         strong Monto a Pagar: 
         | $ #{orden.montoAPagar.toLocaleString('es-AR', {minimumFractionDigits: 2})}
-    
+
     // Observaciones
     if orden.observaciones
       .observaciones
         strong Observaciones:
         p= orden.observaciones
-    
+
+    br
     // Firmas
     .firmas
       .firma-linea
@@ -360,23 +382,23 @@ block contenido
           br
           strong= orden.elaboradoPor
         hr
-        | Elaborado Por
-      
+        | Firma
+
       .firma-linea
         | 
         if orden.aprobadoPor
           br
           strong= orden.aprobadoPor
         hr
-        | Aprobado Por
-      
+        | Firma
+
       .firma-linea
         | 
         if orden.recibioConforme
           br
           strong= orden.recibioConforme
         hr
-        | Recibí Conforme
+        | Firma
 
     .firmas
       .firma-linea
@@ -385,7 +407,7 @@ block contenido
           br
           strong= orden.cedula
         hr
-        | DNI
+        | Elaborado por
 
       .firma-linea
         | 
@@ -393,19 +415,19 @@ block contenido
           br
           strong= orden.cedula
         hr
-        | Nombre y Apellido
-      
+        | Aprobado por
+
       .firma-linea
         | 
         if orden.recibioConforme
           br
           strong= orden.recibioConforme
         hr
-        | Recibí Conforme
-    
+        | Recibido por
+
     .footer(style="margin-top: 20px; text-align: center; font-size: 0.7rem; border-top: 1px solid #ccc; padding-top: 10px;")
       | https://todostock.com.ar 
-  
+
   // Botones de acción
   .no-print(style="text-align: center; margin-top: 20px;")
     button(onclick="window.print()" style="margin-right: 10px; padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;") 🖨️ Imprimir
