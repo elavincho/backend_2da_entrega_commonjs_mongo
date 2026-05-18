@@ -20,8 +20,8 @@ html
             li: a(href="/ordenes-pago") Órdenes de Pago
             li: a(href="/facturas-proveedor") Facturas
             li(style="margin-left: auto;")
-              span #{usuario.username}
-              a(href="/logout" style="margin-left: 10px; color: #ff6b6b;") Cerrar Sesión
+              span(style="font-size: 1rem; font-weight: bold;") #{usuario.username}
+              a(href="/logout" style="margin-left: 10px; color: #f32d2d; font-weight: bold;") Cerrar Sesión
 
     if usuario.rol === 'admin'
       header
@@ -36,11 +36,11 @@ html
             li: a(href="/ordenes-pago") Órdenes de Pago
             li: a(href="/facturas-proveedor") Facturas
             li(style="margin-left: auto;")
-              span #{usuario.username}
-              a(href="/logout" style="margin-left: 10px; color: #ff6b6b;") Cerrar Sesión
+              span(style="font-size: 1rem; font-weight: bold;") #{usuario.username}
+              a(href="/logout" style="margin-left: 10px; color: #f32d2d; font-weight: bold;") Cerrar Sesión
 
     main
       block contenido
 
     footer
-      p &copy; 2024 TodoStock S.A. - Todos los derechos reservados
+      p &copy; 2026 elavincho - All Right Reserved
