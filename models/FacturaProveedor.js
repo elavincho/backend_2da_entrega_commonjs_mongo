@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 // Schema para detalle de productos/servicios - MODIFICADO
 const detalleFacturaSchema = new mongoose.Schema({
-  codigo: { type: String, required: true },
+  codigo: { type: String, required: false },
   descripcion: { type: String, required: true },
   cantidad: { type: Number, required: true, min: 0 },
   precioUnitario: { type: Number, required: true, min: 0 },

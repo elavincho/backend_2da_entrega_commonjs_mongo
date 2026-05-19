@@ -363,4 +363,27 @@ proveedorSelect.addEventListener("change", () => {
 
 
 
-    
+    // Asegurar que los event listeners funcionen para nuevas filas
+function inicializarEventListenersParaFila(productoRow, detalleRow) {
+  const selectProducto = productoRow.querySelector('.producto-select');
+  const inputCantidad = productoRow.querySelector('input[name="detalles[cantidad][]"]');
+  const inputPrecio = detalleRow.querySelector('input[name="detalles[precioUnitario][]"]');
+  
+  if (selectProducto) {
+    selectProducto.addEventListener('change', function() {
+      autocompletarProducto(this);
+    });
+  }
+  
+  if (inputCantidad) {
+    inputCantidad.addEventListener('change', function() {
+      recalcularImporte(this);
+    });
+  }
+  
+  if (inputPrecio) {
+    inputPrecio.addEventListener('change', function() {
+      recalcularImportePorRow(this);
+    });
+  }
+}

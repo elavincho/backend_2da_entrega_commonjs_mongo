@@ -1,3 +1,126 @@
+//- extends ../layout
+
+//- block contenido
+//-   h1= titulo
+
+//-   if error
+//-     .error-msg= error
+
+//-   .info-message(style="background-color: #e7f3ff; border-left: 4px solid #2196F3; padding: 12px; margin-bottom: 20px; border-radius: 4px;")
+//-     p(style="margin: 0;")
+//-       strong 💡 Información: 
+//-       | Si el producto no existe en el inventario, se creará automáticamente al guardar la factura.
+
+//-   form(action="/facturas-proveedor/nuevo" method="POST" id="formFactura")
+//-     // Información de la Factura
+//-     fieldset
+//-       legend Datos de la Factura
+
+//-       div(style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%")
+
+//-         div
+//-           label(for="fechaEmision") Fecha de Emisión:
+//-           input(type="date" name="fechaEmision" id="fechaEmision" required value=datos ? datos.fechaEmision : new Date().toISOString().split('T')[0])
+
+//-         div
+//-           label(for="proveedorId") Proveedor:
+//-           select(name="proveedorId" id="proveedorId" required)
+//-             option(value="") Seleccione un proveedor
+//-             each proveedor in proveedores
+//-               option(value=proveedor.id selected=(datos && datos.proveedorId == proveedor.id))
+//-                 | #{proveedor.tipoDoc === 'DNI' ? proveedor.nombre : proveedor.razonSocial} - #{proveedor.nroDoc}
+
+//-         div
+//-           label(for="puntoVenta") Punto de Venta:
+//-           input(type="number" name="puntoVenta" id="puntoVenta" value=datos ? datos.puntoVenta : '1')
+
+//-         div
+//-           label(for="numero") Número de Factura:
+//-           input(type="number" name="numero" id="numero" required value=datos ? datos.numero : '')
+
+//-         div
+//-           label(for="cae") CAE (Código Autorización):
+//-           input(type="text" name="cae" id="cae" value=datos ? datos.cae : '')
+
+//-         div
+//-           label(for="fechaVtoCAE") Fecha Vto. CAE:
+//-           input(type="date" name="fechaVtoCAE" id="fechaVtoCAE" value=datos ? datos.fechaVtoCAE : '')
+
+//-         div
+//-           label(for="fechaVencimiento") Fecha de Vencimiento Factura:
+//-           input(type="date" name="fechaVencimiento" id="fechaVencimiento" value=datos ? datos.fechaVencimiento : '')
+
+
+//-     // Detalle de productos/servicios
+
+//-     fieldset
+//-       legend Detalle de la Factura
+//-       table#detalleTable(style="width: 100%; border-collapse: collapse;")
+//-         thead
+//-           tr(style="background-color: #f2f2f2;")
+//-             th(style="padding: 8px; border: 1px solid #ddd;") Producto/Concepto
+//-             th(style="padding: 8px; border: 1px solid #ddd;") Código
+//-             th(style="padding: 8px; border: 1px solid #ddd;") Descripción
+//-             th(style="padding: 8px; border: 1px solid #ddd;") Cantidad
+//-             th(style="padding: 8px; border: 1px solid #ddd;") P. Unitario
+//-             th(style="padding: 8px; border: 1px solid #ddd;") Alic. IVA
+//-             th(style="padding: 8px; border: 1px solid #ddd;") Importe
+//-             th(style="padding: 8px; border: 1px solid #ddd;")
+//-         tbody
+//-           tr
+//-             td
+//-               select(name="detalles[productoId][]" style="width: 100%; padding: 5px;" class="producto-select")
+//-                 option(value="") -- Seleccionar producto --
+//-                 each producto in productos
+//-                   option(value=producto.id data-nombre=producto.nombre data-precio=producto.precio)
+//-                     | #{producto.id} - #{producto.nombre}
+//-             td: input(type="text" name="detalles[codigo][]" style="width: 100%; padding: 5px;" placeholder="Código")
+//-             td: input(type="text" name="detalles[descripcion][]" required style="width: 100%; padding: 5px;")
+//-             td: input(type="number" step="any" name="detalles[cantidad][]" value="1" class="calcular" style="width: 100%; padding: 5px;")
+//-             td: input(type="number" step="any" name="detalles[precioUnitario][]" value="0" class="calcular" style="width: 100%; padding: 5px;")
+//-             td: select(name="detalles[alicIva][]" style="width: 100%; padding: 5px;")
+//-               option(value="21%") 21%
+//-               option(value="10.5%") 10.5%
+//-               option(value="0%") 0%
+//-             td: input(type="text" name="detalles[importe][]" readonly class="importe" style="width: 100%; padding: 5px; background-color: #f5f5f5;")
+//-             td: button(type="button" onclick="eliminarRenglon(this)" style="padding: 5px 10px; background-color: #dc3545; color: white; border: none; border-radius: 3px; cursor: pointer;") X
+
+//-       button(type="button" onclick="agregarRenglon()" style="margin-top: 10px; padding: 5px 15px; background-color: #28a745; color: white; border: none; border-radius: 3px; cursor: pointer;") + Agregar Producto
+
+//-       // Totales
+//-       div(style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%")
+//-         div
+//-           label(style="font-weight: bold;") Otros Tributos:
+//-           input(type="number" step="any" name="otrosTributos" id="otrosTributos" value="0" style="width: 100%; margin-left: 10px;")
+//-         div
+//-           label(style="font-weight: bold;") Subtotal Neto:
+//-           input(type="text" id="subtotalNeto" readonly style="width: 100%; margin-left: 10px; background-color: #f5f5f5;")
+//-         div
+//-           label(style="font-weight: bold;") IVA 21%:
+//-           input(type="text" id="iva21" readonly style="width: 100%; margin-left: 10px; background-color: #f5f5f5;")
+//-         div
+//-           label(style="font-weight: bold;") IVA 10.5%:
+//-           input(type="text" id="iva105" readonly style="width: 100%; margin-left: 10px; background-color: #f5f5f5;")
+//-         div(style="font-size: 1.2rem; margin-top: 10px;")
+//-           label(style="font-weight: bold;") TOTAL:
+//-           input(type="text" name="total" id="total" readonly style="width: 100%; margin-left: 10px; font-weight: bold; background-color: #f5f5f5;")
+
+
+//-     // Observaciones
+//-     fieldset
+//-       div
+//-         label Observaciones:
+//-         textarea(name="observaciones" rows="3" style="width: 100%;")= datos ? datos.observaciones : '' 
+
+//-     div.form-actions(style="margin-top: 20px; text-align: center;")
+//-       button(type="submit" style="padding: 10px 30px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;") Generar Factura
+//-       a(href="/facturas-proveedor" style="display: inline-block; margin-left: 10px; padding: 10px 30px; background-color: #6c757d; color: white; text-decoration: none; border-radius: 4px;") Cancelar
+
+//-   block scripts
+//-     script(src="/js/script.js")
+
+
+
 extends ../layout
 
 block contenido
@@ -15,13 +138,10 @@ block contenido
     // Información de la Factura
     fieldset
       legend Datos de la Factura
-
-      div(style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%")
-
+      div(style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;")
         div
           label(for="fechaEmision") Fecha de Emisión:
           input(type="date" name="fechaEmision" id="fechaEmision" required value=datos ? datos.fechaEmision : new Date().toISOString().split('T')[0])
-
         div
           label(for="proveedorId") Proveedor:
           select(name="proveedorId" id="proveedorId" required)
@@ -29,92 +149,229 @@ block contenido
             each proveedor in proveedores
               option(value=proveedor.id selected=(datos && datos.proveedorId == proveedor.id))
                 | #{proveedor.tipoDoc === 'DNI' ? proveedor.nombre : proveedor.razonSocial} - #{proveedor.nroDoc}
-
         div
           label(for="puntoVenta") Punto de Venta:
           input(type="number" name="puntoVenta" id="puntoVenta" value=datos ? datos.puntoVenta : '1')
-
         div
           label(for="numero") Número de Factura:
           input(type="number" name="numero" id="numero" required value=datos ? datos.numero : '')
-
         div
           label(for="cae") CAE (Código Autorización):
           input(type="text" name="cae" id="cae" value=datos ? datos.cae : '')
-
         div
           label(for="fechaVtoCAE") Fecha Vto. CAE:
           input(type="date" name="fechaVtoCAE" id="fechaVtoCAE" value=datos ? datos.fechaVtoCAE : '')
-
         div
           label(for="fechaVencimiento") Fecha de Vencimiento Factura:
           input(type="date" name="fechaVencimiento" id="fechaVencimiento" value=datos ? datos.fechaVencimiento : '')
 
-
-    // Detalle de productos/servicios
-
+    // Detalle de productos - VERSIÓN TARJETAS
     fieldset
       legend Detalle de la Factura
-      table#detalleTable(style="width: 100%; border-collapse: collapse;")
-        thead
-          tr(style="background-color: #f2f2f2;")
-            th(style="padding: 8px; border: 1px solid #ddd;") Producto/Concepto
-            th(style="padding: 8px; border: 1px solid #ddd;") Código
-            th(style="padding: 8px; border: 1px solid #ddd;") Descripción
-            th(style="padding: 8px; border: 1px solid #ddd;") Cantidad
-            th(style="padding: 8px; border: 1px solid #ddd;") P. Unitario
-            th(style="padding: 8px; border: 1px solid #ddd;") Alic. IVA
-            th(style="padding: 8px; border: 1px solid #ddd;") Importe
-            th(style="padding: 8px; border: 1px solid #ddd;")
-        tbody
-          tr
-            td
-              select(name="detalles[productoId][]" style="width: 100%; padding: 5px;" class="producto-select")
+      
+      // Contenedor de tarjetas
+      #productosContainer(style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px;")
+        // Tarjeta template (se clona para cada producto)
+        .producto-card(style="border: 1px solid #ddd; border-radius: 8px; padding: 15px; background-color: #f9f9f9; position: relative;")
+          button(type="button" onclick="eliminarProducto(this)" style="position: absolute; top: 10px; right: 10px; background-color: #dc3545; color: white; border: none; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; font-weight: bold;") ✕
+          
+          div(style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;")
+            div
+              label(style="font-weight: bold; display: block; margin-bottom: 5px;") Producto:
+              select(name="detalles[productoId][]" style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc;" class="producto-select")
                 option(value="") -- Seleccionar producto --
                 each producto in productos
                   option(value=producto.id data-nombre=producto.nombre data-precio=producto.precio)
                     | #{producto.id} - #{producto.nombre}
-            td: input(type="text" name="detalles[codigo][]" style="width: 100%; padding: 5px;" placeholder="Código")
-            td: input(type="text" name="detalles[descripcion][]" required style="width: 100%; padding: 5px;")
-            td: input(type="number" step="any" name="detalles[cantidad][]" value="1" class="calcular" style="width: 100%; padding: 5px;")
-            td: input(type="number" step="any" name="detalles[precioUnitario][]" value="0" class="calcular" style="width: 100%; padding: 5px;")
-            td: select(name="detalles[alicIva][]" style="width: 100%; padding: 5px;")
-              option(value="21%") 21%
-              option(value="10.5%") 10.5%
-              option(value="0%") 0%
-            td: input(type="text" name="detalles[importe][]" readonly class="importe" style="width: 100%; padding: 5px; background-color: #f5f5f5;")
-            td: button(type="button" onclick="eliminarRenglon(this)" style="padding: 5px 10px; background-color: #dc3545; color: white; border: none; border-radius: 3px; cursor: pointer;") X
-
-      button(type="button" onclick="agregarRenglon()" style="margin-top: 10px; padding: 5px 15px; background-color: #28a745; color: white; border: none; border-radius: 3px; cursor: pointer;") + Agregar Producto
+            div
+              label(style="font-weight: bold; display: block; margin-bottom: 5px;") Código:
+              input(type="text" name="detalles[codigo][]" style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc;" placeholder="Código")
+          
+          div(style="margin-bottom: 15px;")
+            label(style="font-weight: bold; display: block; margin-bottom: 5px;") Descripción:
+            input(type="text" name="detalles[descripcion][]" required style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc;" placeholder="Descripción del producto")
+          
+          div(style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 15px;")
+            div
+              label(style="font-weight: bold; display: block; margin-bottom: 5px;") Cantidad:
+              input(type="number" step="any" name="detalles[cantidad][]" value="1" class="calcular" style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc;")
+            div
+              label(style="font-weight: bold; display: block; margin-bottom: 5px;") Precio Unitario:
+              input(type="number" step="any" name="detalles[precioUnitario][]" value="0" class="calcular" style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc;")
+            div
+              label(style="font-weight: bold; display: block; margin-bottom: 5px;") Alic. IVA:
+              select(name="detalles[alicIva][]" style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc;" class="calcular-iva")
+                option(value="21%") 21%
+                option(value="10.5%") 10.5%
+                option(value="0%") 0%
+            div
+              label(style="font-weight: bold; display: block; margin-bottom: 5px;") Importe:
+              input(type="text" name="detalles[importe][]" readonly class="importe" style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc; background-color: #e9ecef; font-weight: bold;")
+      
+      // Botón para agregar producto
+      button(type="button" onclick="agregarProducto()" style="padding: 10px 20px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; margin-top: 10px;")
+        | + Agregar Producto
 
       // Totales
-      div(style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%")
-        div
-          label(style="font-weight: bold;") Otros Tributos:
-          input(type="number" step="any" name="otrosTributos" id="otrosTributos" value="0" style="width: 100%; margin-left: 10px;")
-        div
-          label(style="font-weight: bold;") Subtotal Neto:
-          input(type="text" id="subtotalNeto" readonly style="width: 100%; margin-left: 10px; background-color: #f5f5f5;")
-        div
-          label(style="font-weight: bold;") IVA 21%:
-          input(type="text" id="iva21" readonly style="width: 100%; margin-left: 10px; background-color: #f5f5f5;")
-        div
-          label(style="font-weight: bold;") IVA 10.5%:
-          input(type="text" id="iva105" readonly style="width: 100%; margin-left: 10px; background-color: #f5f5f5;")
-        div(style="font-size: 1.2rem; margin-top: 10px;")
-          label(style="font-weight: bold;") TOTAL:
-          input(type="text" name="total" id="total" readonly style="width: 100%; margin-left: 10px; font-weight: bold; background-color: #f5f5f5;")
-
+      div(style="margin-top: 30px; padding: 20px; background-color: #f2f2f2; border-radius: 8px;")
+        div(style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; max-width: 500px; margin-left: auto;")
+          div
+            label(style="font-weight: bold;") Otros Tributos:
+            input(type="number" step="any" name="otrosTributos" id="otrosTributos" value="0" style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc;")
+          div
+            label(style="font-weight: bold;") Subtotal Neto:
+            input(type="text" id="subtotalNeto" readonly style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc; background-color: #e9ecef;")
+          div
+            label(style="font-weight: bold;") IVA 21%:
+            input(type="text" id="iva21" readonly style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc; background-color: #e9ecef;")
+          div
+            label(style="font-weight: bold;") IVA 10.5%:
+            input(type="text" id="iva105" readonly style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc; background-color: #e9ecef;")
+          div(style="grid-column: span 2;")
+            label(style="font-weight: bold; font-size: 1.2rem;") TOTAL:
+            input(type="text" name="total" id="total" readonly style="width: 100%; padding: 10px; border-radius: 4px; border: 1px solid #ccc; background-color: #e9ecef; font-size: 1.2rem; font-weight: bold; color: #28a745;")
 
     // Observaciones
     fieldset
+      legend Observaciones
       div
         label Observaciones:
-        textarea(name="observaciones" rows="3" style="width: 100%;")= datos ? datos.observaciones : '' 
+        textarea(name="observaciones" rows="3" style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc;")= datos ? datos.observaciones : ''
 
     div.form-actions(style="margin-top: 20px; text-align: center;")
-      button(type="submit" style="padding: 10px 30px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;") Generar Factura
-      a(href="/facturas-proveedor" style="display: inline-block; margin-left: 10px; padding: 10px 30px; background-color: #6c757d; color: white; text-decoration: none; border-radius: 4px;") Cancelar
+      button(type="submit" style="padding: 12px 40px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px;") Generar Factura
+      a(href="/facturas-proveedor" style="display: inline-block; margin-left: 10px; padding: 12px 40px; background-color: #6c757d; color: white; text-decoration: none; border-radius: 4px;") Cancelar
 
   block scripts
-    script(src="/js/script.js")
+    script(src="/js/facturaProveedor.js")
+
+
+  //- block scripts
+  //-   script.
+  //-     let productoCounter = 1;
+      
+  //-     // Función para autocompletar producto
+  //-     function autocompletarProducto(selectElement) {
+  //-       const card = selectElement.closest('.producto-card');
+  //-       const selectedOption = selectElement.options[selectElement.selectedIndex];
+        
+  //-       if (selectedOption.value) {
+  //-         const productoNombre = selectedOption.getAttribute('data-nombre') || '';
+  //-         const productoPrecio = selectedOption.getAttribute('data-precio') || 0;
+          
+  //-         card.querySelector('input[name="detalles[descripcion][]"]').value = productoNombre;
+  //-         card.querySelector('input[name="detalles[precioUnitario][]"]').value = productoPrecio;
+  //-         card.querySelector('input[name="detalles[codigo][]"]').value = selectedOption.value;
+          
+  //-         const cantidad = parseFloat(card.querySelector('input[name="detalles[cantidad][]"]').value) || 0;
+  //-         const precio = parseFloat(productoPrecio);
+  //-         card.querySelector('input[name="detalles[importe][]"]').value = (cantidad * precio).toFixed(2);
+          
+  //-         recalcularTotales();
+  //-       }
+  //-     }
+      
+  //-     // Función para agregar nuevo producto
+  //-     function agregarProducto() {
+  //-       const container = document.getElementById('productosContainer');
+  //-       const template = container.querySelector('.producto-card');
+  //-       const newCard = template.cloneNode(true);
+        
+  //-       // Limpiar valores
+  //-       newCard.querySelectorAll('input').forEach(input => {
+  //-         if (input.type !== 'button') {
+  //-           input.value = '';
+  //-         }
+  //-       });
+  //-       newCard.querySelector('select').value = '';
+  //-       newCard.querySelector('input[name="detalles[cantidad][]"]').value = '1';
+  //-       newCard.querySelector('input[name="detalles[precioUnitario][]"]').value = '0';
+  //-       newCard.querySelector('input[name="detalles[importe][]"]').value = '';
+  //-       newCard.querySelector('select[name="detalles[alicIva][]"]').value = '21%';
+        
+  //-       // Agregar event listeners
+  //-       newCard.querySelector('.producto-select').addEventListener('change', function() {
+  //-         autocompletarProducto(this);
+  //-       });
+        
+  //-       newCard.querySelectorAll('.calcular').forEach(input => {
+  //-         input.addEventListener('change', function() {
+  //-           recalcularImporte(this);
+  //-         });
+  //-       });
+        
+  //-       container.appendChild(newCard);
+  //-       recalcularTotales();
+  //-     }
+      
+  //-     // Función para eliminar producto
+  //-     function eliminarProducto(btn) {
+  //-       const card = btn.closest('.producto-card');
+  //-       const container = document.getElementById('productosContainer');
+  //-       if (container.querySelectorAll('.producto-card').length > 1) {
+  //-         card.remove();
+  //-         recalcularTotales();
+  //-       } else {
+  //-         alert('Debe haber al menos un producto en la factura');
+  //-       }
+  //-     }
+      
+  //-     // Recalcular importe de un producto específico
+  //-     function recalcularImporte(inputElement) {
+  //-       const card = inputElement.closest('.producto-card');
+  //-       const cantidad = parseFloat(card.querySelector('input[name="detalles[cantidad][]"]').value) || 0;
+  //-       const precio = parseFloat(card.querySelector('input[name="detalles[precioUnitario][]"]').value) || 0;
+  //-       const importe = cantidad * precio;
+        
+  //-       card.querySelector('input[name="detalles[importe][]"]').value = importe.toFixed(2);
+  //-       recalcularTotales();
+  //-     }
+      
+  //-     // Recalcular todos los totales
+  //-     function recalcularTotales() {
+  //-       let subtotalNeto = 0;
+  //-       let iva21Total = 0;
+  //-       let iva105Total = 0;
+        
+  //-       document.querySelectorAll('.producto-card').forEach(card => {
+  //-         const cantidad = parseFloat(card.querySelector('input[name="detalles[cantidad][]"]').value) || 0;
+  //-         const precio = parseFloat(card.querySelector('input[name="detalles[precioUnitario][]"]').value) || 0;
+  //-         const alicIva = card.querySelector('select[name="detalles[alicIva][]"]').value;
+  //-         const importe = cantidad * precio;
+          
+  //-         subtotalNeto += importe;
+  //-         if (alicIva === '21%') {
+  //-           iva21Total += importe * 0.21;
+  //-         } else if (alicIva === '10.5%') {
+  //-           iva105Total += importe * 0.105;
+  //-         }
+  //-       });
+        
+  //-       const otrosTributos = parseFloat(document.getElementById('otrosTributos').value) || 0;
+  //-       const total = subtotalNeto + iva21Total + iva105Total + otrosTributos;
+        
+  //-       document.getElementById('subtotalNeto').value = subtotalNeto.toLocaleString('es-AR', {minimumFractionDigits: 2});
+  //-       document.getElementById('iva21').value = iva21Total.toLocaleString('es-AR', {minimumFractionDigits: 2});
+  //-       document.getElementById('iva105').value = iva105Total.toLocaleString('es-AR', {minimumFractionDigits: 2});
+  //-       document.getElementById('total').value = total.toLocaleString('es-AR', {minimumFractionDigits: 2});
+  //-     }
+      
+  //-     // Event listeners iniciales
+  //-     document.addEventListener('DOMContentLoaded', function() {
+  //-       // Producto select
+  //-       document.querySelectorAll('.producto-select').forEach(select => {
+  //-         select.addEventListener('change', function() {
+  //-           autocompletarProducto(this);
+  //-         });
+  //-       });
+        
+  //-       // Campos calcular
+  //-       document.querySelectorAll('.calcular').forEach(input => {
+  //-         input.addEventListener('change', function() {
+  //-           recalcularImporte(this);
+  //-         });
+  //-       });
+        
+  //-       // Otros tributos
+  //-       document.getElementById('otrosTributos').addEventListener('change', recalcularTotales);
+  //-     });
