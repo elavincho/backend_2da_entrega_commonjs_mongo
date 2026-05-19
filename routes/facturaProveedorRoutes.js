@@ -5,6 +5,12 @@ const facturaProveedorController = require('../controllers/facturaProveedorContr
 // Listar todas las facturas
 router.get('/', facturaProveedorController.index);
 
+// ✅ Nueva ruta: Inventario
+router.get('/inventario', facturaProveedorController.inventario);
+
+// ✅ Nueva ruta: Buscar productos (API)
+router.get('/buscar-productos', facturaProveedorController.buscarProductos);
+
 // Crear nueva factura
 router.get('/nuevo', facturaProveedorController.formCrear);
 router.post('/nuevo', facturaProveedorController.almacenar);

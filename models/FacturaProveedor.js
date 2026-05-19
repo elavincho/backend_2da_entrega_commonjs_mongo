@@ -1,118 +1,6 @@
-// const mongoose = require("mongoose");
-
-// // Schema para detalle de productos/servicios
-// const detalleFacturaSchema = new mongoose.Schema({
-//   codigo: { type: String, required: true },
-//   descripcion: { type: String, required: true },
-//   cantidad: { type: Number, required: true, min: 0 },
-//   precioUnitario: { type: Number, required: true, min: 0 },
-//   alicIva: { type: String, default: "21%" },
-//   importe: { type: Number, required: true, min: 0 },
-// });
-
-// const facturaProveedorSchema = new mongoose.Schema(
-//   {
-//     numero: {
-//       type: String,
-//       required: true,
-//       unique: true,
-//     },
-//     puntoVenta: {
-//       type: Number,
-//       required: true,
-//       default: 1,
-//     },
-//     proveedorId: {
-//       type: Number,
-//       required: true,
-//     },
-//     proveedorInfo: {
-//       cuit: String,
-//       razonSocial: String,
-//       localidad: String,
-//       provincia: String,
-//       telefono: String,
-//       direccion: String,
-//     },
-//     empresaInfo: {
-//       cuit: { type: String, default: "30-12345678-1" },
-//       razonSocial: { type: String, default: "TodoStock S.A." },
-//       direccion: { type: String, default: "Av. Libertador 1000 - Avellaneda" },
-//       localidad: { type: String, default: "Buenos Aires" },
-//       telefono: { type: String, default: "+54 11 2222 3333" },
-//       ingBrutos: String,
-//       inicioActividades: Date,
-//     },
-//     fechaEmision: {
-//       type: Date,
-//       required: true,
-//       default: Date.now,
-//     },
-//     fechaVencimiento: Date,
-//     estatus: {
-//       type: String,
-//       enum: ["Pendiente", "Pagada", "Anulada", "Parcial"],
-//       default: "Pendiente",
-//     },
-//     detalles: [detalleFacturaSchema],
-//     subtotalNeto: { type: Number, default: 0 },
-//     iva21: { type: Number, default: 0 },
-//     iva105: { type: Number, default: 0 },
-//     otrosTributos: { type: Number, default: 0 },
-//     total: { type: Number, default: 0 }, // ✅ Quitar required: true
-//     cae: { type: String },
-//     fechaVtoCAE: Date,
-//     observaciones: String,
-//   },
-//   {
-//     timestamps: true,
-//   },
-// );
-
-// // ✅ CORRECCIÓN: Middleware para calcular totales antes de guardar
-// facturaProveedorSchema.pre("save", function () {
-//   try {
-//     let subtotalNeto = 0;
-//     let iva21Total = 0;
-//     let iva105Total = 0;
-
-//     // Calcular subtotales
-//     if (this.detalles && this.detalles.length > 0) {
-//       this.detalles.forEach((detalle) => {
-//         subtotalNeto += detalle.importe || 0;
-//         if (detalle.alicIva === "21%") {
-//           iva21Total += (detalle.importe || 0) * 0.21;
-//         } else if (detalle.alicIva === "10.5%") {
-//           iva105Total += (detalle.importe || 0) * 0.105;
-//         }
-//       });
-//     }
-
-//     this.subtotalNeto = subtotalNeto;
-//     this.iva21 = iva21Total;
-//     this.iva105 = iva105Total;
-//     this.total =
-//       subtotalNeto + iva21Total + iva105Total + (this.otrosTributos || 0);
-
-//     console.log("📊 Totales calculados:", {
-//       subtotalNeto: this.subtotalNeto,
-//       iva21: this.iva21,
-//       iva105: this.iva105,
-//       otrosTributos: this.otrosTributos,
-//       total: this.total,
-//     });
-//   } catch (error) {
-//     console.error("Error calculando totales:", error);
-//     throw error;
-//   }
-// });
-
-// module.exports = mongoose.model("FacturaProveedor", facturaProveedorSchema);
-
-
 const mongoose = require("mongoose");
 
-// Schema para detalle de productos/servicios
+// Schema para detalle de productos/servicios - MODIFICADO
 const detalleFacturaSchema = new mongoose.Schema({
   codigo: { type: String, required: true },
   descripcion: { type: String, required: true },
@@ -120,24 +8,17 @@ const detalleFacturaSchema = new mongoose.Schema({
   precioUnitario: { type: Number, required: true, min: 0 },
   alicIva: { type: String, default: "21%" },
   importe: { type: Number, required: true, min: 0 },
+  // ✅ Nuevos campos para vincular con productos
+  productoId: { type: Number, default: null }, // ID del producto existente
+  actualizarStock: { type: Boolean, default: true } // Si debe actualizar stock
 });
 
 const facturaProveedorSchema = new mongoose.Schema(
   {
-    numero: {
-      type: String,
-      required: true,
-      unique: true,
-    },
-    puntoVenta: {
-      type: Number,
-      required: true,
-      default: 1,
-    },
-    proveedorId: {
-      type: Number,
-      required: true,
-    },
+    // ... campos existentes ...
+    numero: { type: String, required: true, unique: true },
+    puntoVenta: { type: Number, required: true, default: 1 },
+    proveedorId: { type: Number, required: true },
     proveedorInfo: {
       cuit: String,
       razonSocial: String,
@@ -155,11 +36,7 @@ const facturaProveedorSchema = new mongoose.Schema(
       ingBrutos: String,
       inicioActividades: Date,
     },
-    fechaEmision: {
-      type: Date,
-      required: true,
-      default: Date.now,
-    },
+    fechaEmision: { type: Date, required: true, default: Date.now },
     fechaVencimiento: Date,
     estatus: {
       type: String,
@@ -175,16 +52,12 @@ const facturaProveedorSchema = new mongoose.Schema(
     cae: { type: String },
     fechaVtoCAE: Date,
     observaciones: String,
-    // ✅ Nuevo campo para vincular con orden de pago
-    ordenPagoId: {
-      type: Number,
-      default: null
-    },
-    fechaPago: Date
+    ordenPagoId: { type: Number, default: null },
+    fechaPago: Date,
+    // ✅ Nuevo campo para registrar que ya se actualizó el stock
+    stockActualizado: { type: Boolean, default: false }
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
 
 // Middleware para calcular totales antes de guardar

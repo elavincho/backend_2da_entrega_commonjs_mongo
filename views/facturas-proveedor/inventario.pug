@@ -1,0 +1,56 @@
+extends ../layout
+
+block contenido
+  h1= titulo
+  
+  if mensajeExito
+    .success-message(style="background-color: #d4edda; color: #155724; padding: 12px; border-radius: 8px; margin-bottom: 20px;")
+      = mensajeExito
+  
+  .inventario-resumen(style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;")
+    a.btn-nuevo(href="/productos/nuevo" style="background-color: #28a745;") + Nuevo Producto
+    a.btn-nuevo(href="/facturas-proveedor/nuevo" style="background-color: #007bff;") + Nueva Factura
+  
+  if productos && productos.length > 0
+    table
+      thead
+        tr
+          th ID
+          th Producto
+          th Categoría
+          th Precio
+          th Stock Actual
+          th Stock Mínimo
+          th Estado
+          th Acciones
+      tbody
+        each producto in productos
+          tr(style=producto.stockActual <= producto.stockMinimo ? 'background-color: #fff3cd;' : '')
+            td= producto.id
+            td= producto.nombre
+            td= producto.categoria
+            td $ #{producto.precio.toLocaleString('es-AR', {minimumFractionDigits: 2})}
+            td(style=`font-weight: ${producto.stockActual <= producto.stockMinimo ? 'bold' : 'normal'}; color: ${producto.colorEstado}`)= producto.stockActual
+            td= producto.stockMinimo
+            td
+              span(style=`color: ${producto.colorEstado}; font-weight: bold;`)= producto.estado
+            td
+              div.acciones-container
+                a(href=`/productos/editar/${producto.id}`) Editar
+                a(href="/facturas-proveedor/nuevo" style="background-color: #28a745;") Comprar
+    
+    // Productos con stock bajo
+    - const productosBajos = productos.filter(p => p.stockActual <= p.stockMinimo);
+    if productosBajos.length > 0
+      .alert-stock-bajo(style="margin-top: 30px; padding: 15px; background-color: #fff3cd; border: 1px solid #ffc107; border-radius: 8px;")
+        h3(style="color: #856404;") ⚠️ Productos con stock bajo
+        ul
+          each producto in productosBajos
+            li(style="margin: 5px 0;")
+              strong #{producto.nombre}: 
+              | Stock actual: #{producto.stockActual} (Mínimo: #{producto.stockMinimo})
+              a(href="/facturas-proveedor/nuevo" style="margin-left: 10px; color: #28a745;") Comprar
+  else
+    p No hay productos registrados.
+    a(href="/productos/nuevo" style="display: inline-block; margin-top: 10px;") Registrar primer producto
+

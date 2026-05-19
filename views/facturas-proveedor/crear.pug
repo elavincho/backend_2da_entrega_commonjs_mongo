@@ -6,6 +6,11 @@ block contenido
   if error
     .error-msg= error
 
+  .info-message(style="background-color: #e7f3ff; border-left: 4px solid #2196F3; padding: 12px; margin-bottom: 20px; border-radius: 4px;")
+    p(style="margin: 0;")
+      strong 💡 Información: 
+      | Si el producto no existe en el inventario, se creará automáticamente al guardar la factura.
+
   form(action="/facturas-proveedor/nuevo" method="POST" id="formFactura")
     // Información de la Factura
     fieldset
@@ -47,30 +52,38 @@ block contenido
 
 
     // Detalle de productos/servicios
+
     fieldset
       legend Detalle de la Factura
       table#detalleTable(style="width: 100%; border-collapse: collapse;")
         thead
           tr(style="background-color: #f2f2f2;")
-            th(style="padding: 3px; border: 1px solid #ddd; width: 70px") Código
-            th(style="padding: 3px; border: 1px solid #ddd; width: 100px") Cant.
+            th(style="padding: 8px; border: 1px solid #ddd;") Producto/Concepto
+            th(style="padding: 8px; border: 1px solid #ddd;") Código
             th(style="padding: 8px; border: 1px solid #ddd;") Descripción
+            th(style="padding: 8px; border: 1px solid #ddd;") Cantidad
             th(style="padding: 8px; border: 1px solid #ddd;") P. Unitario
             th(style="padding: 8px; border: 1px solid #ddd;") Alic. IVA
             th(style="padding: 8px; border: 1px solid #ddd;") Importe
             th(style="padding: 8px; border: 1px solid #ddd;")
         tbody
           tr
-            td(style="border: 1px solid #ddd;"): input(type="text" name="detalles[codigo][]" required style="width: 100%; padding: 5px;")
-            td(style="border: 1px solid #ddd;"): input(type="number" step="any" name="detalles[cantidad][]" value="1" class="calcular" style="width: 100%; padding: 5px;")
-            td(style="border: 1px solid #ddd;"): input(type="text" name="detalles[descripcion][]" required style="width: 100%; padding: 5px;")
-            td(style="border: 1px solid #ddd;"): input(type="number" step="any" name="detalles[precioUnitario][]" value="0" class="calcular" style="width: 100%; padding: 5px;")
-            td(style="border: 1px solid #ddd;"): select(name="detalles[alicIva][]" style="width: 100%; padding: 5px;")
+            td
+              select(name="detalles[productoId][]" style="width: 100%; padding: 5px;" class="producto-select")
+                option(value="") -- Seleccionar producto --
+                each producto in productos
+                  option(value=producto.id data-nombre=producto.nombre data-precio=producto.precio)
+                    | #{producto.id} - #{producto.nombre}
+            td: input(type="text" name="detalles[codigo][]" style="width: 100%; padding: 5px;" placeholder="Código")
+            td: input(type="text" name="detalles[descripcion][]" required style="width: 100%; padding: 5px;")
+            td: input(type="number" step="any" name="detalles[cantidad][]" value="1" class="calcular" style="width: 100%; padding: 5px;")
+            td: input(type="number" step="any" name="detalles[precioUnitario][]" value="0" class="calcular" style="width: 100%; padding: 5px;")
+            td: select(name="detalles[alicIva][]" style="width: 100%; padding: 5px;")
               option(value="21%") 21%
               option(value="10.5%") 10.5%
               option(value="0%") 0%
-            td(style="border: 1px solid #ddd;"): input(type="text" name="detalles[importe][]" readonly class="importe" style="width: 100%; padding: 5px; background-color: #f5f5f5;")
-            td(style="border: 1px solid #ddd;"): button(type="button" onclick="eliminarRenglon(this)" style="padding: 5px 10px; background-color: #dc3545; color: white; border: none; border-radius: 3px; cursor: pointer;") X
+            td: input(type="text" name="detalles[importe][]" readonly class="importe" style="width: 100%; padding: 5px; background-color: #f5f5f5;")
+            td: button(type="button" onclick="eliminarRenglon(this)" style="padding: 5px 10px; background-color: #dc3545; color: white; border: none; border-radius: 3px; cursor: pointer;") X
 
       button(type="button" onclick="agregarRenglon()" style="margin-top: 10px; padding: 5px 15px; background-color: #28a745; color: white; border: none; border-radius: 3px; cursor: pointer;") + Agregar Producto
 
@@ -91,6 +104,7 @@ block contenido
         div(style="font-size: 1.2rem; margin-top: 10px;")
           label(style="font-weight: bold;") TOTAL:
           input(type="text" name="total" id="total" readonly style="width: 100%; margin-left: 10px; font-weight: bold; background-color: #f5f5f5;")
+
 
     // Observaciones
     fieldset
