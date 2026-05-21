@@ -77,37 +77,6 @@ block contenido
           strong Teléfono: 
           | #{orden.proveedorInfo.telefono || 'N/A'}
 
-    // Tabla de conceptos
-    //- table
-    //-   thead
-    //-     tr
-    //-       th Concepto
-    //-       th Descripción
-    //-       th Debe
-    //-       th Haber
-    //-       th Impuesto
-    //-       th Monto
-    //-       th Neto
-    //-   tbody
-    //-     each concepto in orden.conceptos
-    //-       tr
-    //-         td.text-left= concepto.codigoConcepto
-    //-         td.text-left= concepto.descripcion
-    //-         td= concepto.debe.toLocaleString('es-AR', {minimumFractionDigits: 2})
-    //-         td= concepto.haber.toLocaleString('es-AR', {minimumFractionDigits: 2})
-    //-         td= concepto.impuesto
-    //-         td= concepto.montoImpuesto.toLocaleString('es-AR', {minimumFractionDigits: 2})
-    //-         td= concepto.netoRenglon.toLocaleString('es-AR', {minimumFractionDigits: 2})
-
-    // Subtotales
-    //- table
-    //-   tr
-    //-     th Subtotales
-    //-     td= orden.subtotalDebe.toLocaleString('es-AR', {minimumFractionDigits: 2})
-    //-     td= orden.subtotalHaber.toLocaleString('es-AR', {minimumFractionDigits: 2})
-    //-     td= orden.subtotalImpuesto.toLocaleString('es-AR', {minimumFractionDigits: 2})
-    //-     td= orden.subtotalNeto.toLocaleString('es-AR', {minimumFractionDigits: 2})
-
     // Facturas pagadas
     if facturasRelacionadas && facturasRelacionadas.length > 0
       fieldset
