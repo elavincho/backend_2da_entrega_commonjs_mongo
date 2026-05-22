@@ -43,7 +43,7 @@ const usuarioSchema = new mongoose.Schema({
   }
 });
 
-// ✅ CORRECCIÓN 1: Usar async/await SIN parámetro next
+//Usar async/await SIN parámetro next
 usuarioSchema.pre('save', async function() {
   try {
     if (!this.isModified('password')) return;
@@ -55,7 +55,7 @@ usuarioSchema.pre('save', async function() {
   }
 });
 
-// ✅ CORRECCIÓN 2: Método para comparar passwords
+//Método para comparar passwords
 usuarioSchema.methods.comparePassword = async function(password) {
   return await bcrypt.compare(password, this.password);
 };
