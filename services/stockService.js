@@ -1,7 +1,7 @@
 const Producto = require("../models/Producto");
 
 class StockService {
-  // ✅ Método estático para obtener el próximo ID disponible
+  // Método estático para obtener el próximo ID disponible
   static async getNextProductoId() {
     const ultimoProducto = await Producto.findOne().sort({ id: -1 });
     return ultimoProducto ? ultimoProducto.id + 1 : 1;
@@ -53,7 +53,7 @@ class StockService {
           cantidadAgregada: detalle.cantidad,
         });
       } else if (detalle.descripcion) {
-        // ✅ Crear producto automáticamente si no existe
+        // Crear producto automáticamente si no existe
         const nuevoId = await StockService.getNextProductoId(); // ✅ Usar StockService.getNextProductoId()
 
         const nuevoProducto = new Producto({
@@ -81,7 +81,7 @@ class StockService {
         });
 
         console.log(
-          `✅ Producto creado: ${detalle.descripcion} (ID: ${nuevoId})`,
+          `Producto creado: ${detalle.descripcion} (ID: ${nuevoId})`,
         );
       } else {
         resultados.push({
