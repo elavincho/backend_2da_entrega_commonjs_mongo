@@ -44,7 +44,7 @@ const proveedorController = {
         telefono: req.body.telefono,
         direccion: req.body.direccion,
         razonSocial: req.body.tipoDoc === "CUIT" ? req.body.razonSocial : null,
-        saldoCuentaCorriente: parseFloat(req.body.saldoCuentaCorriente) || 0
+        saldoCuentaCorriente: parseFloat(req.body.saldoCuentaCorriente) || 0,
       });
       res.redirect("/proveedores/listar");
     } catch (error) {
@@ -85,7 +85,7 @@ const proveedorController = {
           email: req.body.email,
           telefono: req.body.telefono,
           direccion: req.body.direccion,
-           saldoCuentaCorriente: parseFloat(req.body.saldoCuentaCorriente) || 0
+          saldoCuentaCorriente: parseFloat(req.body.saldoCuentaCorriente) || 0,
         },
         { new: true },
       );
