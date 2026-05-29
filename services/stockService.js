@@ -174,3 +174,21 @@ class StockService {
 }
 
 module.exports = StockService;
+
+
+// static async obtenerInventario() {
+//     const productos = await Producto.find().sort({ id: 1 });
+
+//     return productos.map((p) => ({
+//       id: p.id,
+//       nombre: p.nombre,
+//       categoria: p.categoria,
+//       precio: p.precio,
+//       stockActual: p.stockActual,
+//       stockMinimo: p.stockMinimo,
+//       estado: p.stockActual <= p.stockMinimo ? "⚠️ Bajo stock" : "✅ Normal",
+//       colorEstado: p.stockActual <= p.stockMinimo ? "#cc0000" : "#28a745",
+//     }));
+//   }
+
+
