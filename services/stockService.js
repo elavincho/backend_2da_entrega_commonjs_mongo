@@ -286,6 +286,107 @@ class StockService {
 
     return resultados;
   }
+
+  // Devolver stock desde una nota de crédito (devuelve productos al inventario)
+  static async devolverStockDesdeNotaCredito(nota) {
+    const resultados = [];
+
+    for (const concepto of nota.conceptos) {
+      let producto = null;
+
+      // Buscar por ID si se proporcionó
+      if (concepto.productoId) {
+        producto = await Producto.findOne({ id: concepto.productoId });
+      }
+
+      // Si no se encontró por ID, buscar por código
+      if (!producto && concepto.codigo) {
+        const codigoNumero = parseInt(concepto.codigo);
+        if (!isNaN(codigoNumero)) {
+          producto = await Producto.findOne({ id: codigoNumero });
+        }
+      }
+
+      // Si no, buscar por nombre
+      if (!producto && concepto.descripcion) {
+        producto = await Producto.findOne({
+          nombre: { $regex: `^${concepto.descripcion}$`, $options: "i" },
+        });
+      }
+
+      if (producto) {
+        // Aumentar stock del producto existente (devolución)
+        const stockAnterior = producto.stockActual;
+        producto.stockActual += concepto.cantidad;
+        await producto.save();
+
+        resultados.push({
+          exito: true,
+          accion: "devuelto",
+          productoId: producto.id,
+          nombre: producto.nombre,
+          stockAnterior,
+          stockNuevo: producto.stockActual,
+          cantidadDevuelta: concepto.cantidad,
+        });
+      } else {
+        resultados.push({
+          exito: false,
+          codigo: concepto.codigo,
+          descripcion: concepto.descripcion,
+          error: "Producto no encontrado en el inventario para devolver",
+        });
+
+        throw new Error(
+          `Producto "${concepto.descripcion}" no encontrado en el inventario.`,
+        );
+      }
+    }
+
+    return resultados;
+  }
+
+  // Revertir la devolución de stock (cuando se anula una nota de crédito)
+  static async revertirDevolucionStockDesdeNotaCredito(nota) {
+    const resultados = [];
+
+    for (const concepto of nota.conceptos) {
+      let producto = null;
+
+      if (concepto.productoId) {
+        producto = await Producto.findOne({ id: concepto.productoId });
+      } else if (concepto.codigo) {
+        const codigoNumero = parseInt(concepto.codigo);
+        if (!isNaN(codigoNumero)) {
+          producto = await Producto.findOne({ id: codigoNumero });
+        }
+      }
+
+      if (producto) {
+        const stockAnterior = producto.stockActual;
+        producto.stockActual -= concepto.cantidad;
+        if (producto.stockActual < 0) producto.stockActual = 0;
+        await producto.save();
+
+        resultados.push({
+          exito: true,
+          productoId: producto.id,
+          nombre: producto.nombre,
+          stockAnterior,
+          stockNuevo: producto.stockActual,
+          cantidadRevertida: concepto.cantidad,
+        });
+      } else {
+        resultados.push({
+          exito: false,
+          descripcion: concepto.descripcion,
+          error: "Producto no encontrado para revertir devolución",
+        });
+      }
+    }
+
+    return resultados;
+  }
 }
 
 module.exports = StockService;
