@@ -1,0 +1,260 @@
+const NotaDeCredito = require("../models/NotaDeCredito");
+const Cliente = require("../models/Cliente");
+const FacturaCliente = require("../models/FacturaCliente");
+const StockService = require("../services/stockService");
+
+const notaDeCreditoController = {
+  // Listar todas las notas
+  index: async (req, res) => {
+    try {
+      const notas = await NotaDeCredito.find().sort({ createdAt: -1 });
+      res.render("notas-credito/index", {
+        titulo: "Notas de Crédito - TodoStock S.A.",
+        notas: notas,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Error al listar notas de crédito");
+    }
+  },
+
+  // Formulario de creación
+  formCrear: async (req, res) => {
+    try {
+      const clientes = await Cliente.find().sort({ id: 1 });
+      const productos = await StockService.obtenerTodosProductos();
+      const facturas = await FacturaCliente.find({ 
+        estatus: { $in: ["Pendiente", "Pagada"] } 
+      }).sort({ createdAt: -1 });
+      
+      res.render("notas-credito/crear", {
+        titulo: "Nueva Nota de Crédito",
+        clientes: clientes,
+        productos: productos,
+        facturas: facturas,
+        error: null,
+        datos: null,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Error al cargar formulario");
+    }
+  },
+
+  // Guardar nueva nota
+  almacenar: async (req, res) => {
+    try {
+      const {
+        clienteId,
+        puntoVenta,
+        numero,
+        fechaEmision,
+        fechaVencimiento,
+        conceptos,
+        otrosTributos,
+        observaciones,
+        cae,
+        fechaVtoCAE,
+        facturaOrigenId,
+        facturaOrigenNumero,
+      } = req.body;
+
+      // Obtener datos del cliente
+      const cliente = await Cliente.findOne({ id: parseInt(clienteId) });
+      if (!cliente) {
+        throw new Error("Cliente no encontrado");
+      }
+
+      // Validar que haya al menos un concepto
+      if (!conceptos || !conceptos.descripcion || conceptos.descripcion.length === 0) {
+        throw new Error("Debe agregar al menos un concepto");
+      }
+
+      // Parsear conceptos del formulario
+      const conceptosArray = [];
+      const numConceptos = conceptos.descripcion.length;
+      
+      for (let i = 0; i < numConceptos; i++) {
+        const cantidad = parseFloat(conceptos.cantidad[i]) || 1;
+        const precioUnitario = parseFloat(conceptos.precioUnitario[i]) || 0;
+        const importe = cantidad * precioUnitario;
+
+        conceptosArray.push({
+          codigo: conceptos.codigo ? conceptos.codigo[i] : "",
+          descripcion: conceptos.descripcion[i],
+          cantidad: cantidad,
+          precioUnitario: precioUnitario,
+          alicIva: conceptos.alicIva[i] || "21%",
+          importe: importe,
+          productoId: conceptos.productoId && conceptos.productoId[i] ? parseInt(conceptos.productoId[i]) : null,
+          actualizarStock: true,
+        });
+      }
+
+      // Formatear número de nota
+      const numeroCompleto = `${String(puntoVenta || 1).padStart(4, "0")}-${String(numero).padStart(8, "0")}`;
+
+      const nota = new NotaDeCredito({
+        numero: numeroCompleto,
+        puntoVenta: parseInt(puntoVenta) || 1,
+        clienteId: parseInt(clienteId),
+        clienteInfo: {
+          cuit: cliente.nroDoc,
+          razonSocial: cliente.tipoDoc === "DNI" ? cliente.nombre : cliente.razonSocial,
+          localidad: cliente.direccion?.split(",")[0] || "",
+          provincia: "",
+          telefono: cliente.telefono,
+          direccion: cliente.direccion,
+        },
+        fechaEmision: new Date(fechaEmision),
+        fechaVencimiento: fechaVencimiento ? new Date(fechaVencimiento) : null,
+        conceptos: conceptosArray,
+        otrosTributos: parseFloat(otrosTributos) || 0,
+        observaciones: observaciones,
+        cae: cae,
+        fechaVtoCAE: fechaVtoCAE ? new Date(fechaVtoCAE) : null,
+        estatus: "Pendiente",
+        facturaOrigenId: facturaOrigenId || null,
+        facturaOrigenNumero: facturaOrigenNumero || null,
+        stockAfectado: false,
+      });
+
+      await nota.save();
+
+      // Actualizar saldo del cliente (DISMINUIR la deuda)
+      let saldoActual = parseFloat(cliente.saldoCuentaCorriente) || 0;
+      cliente.saldoCuentaCorriente = saldoActual - nota.total;
+      await cliente.save();
+
+      req.session.mensajeExito = "Nota de crédito guardada exitosamente";
+      res.redirect("/notas-credito");
+    } catch (error) {
+      console.error(error);
+      const clientes = await Cliente.find().sort({ id: 1 });
+      const productos = await StockService.obtenerTodosProductos();
+      const facturas = await FacturaCliente.find({ 
+        estatus: { $in: ["Pendiente", "Pagada"] } 
+      }).sort({ createdAt: -1 });
+      
+      res.render("notas-credito/crear", {
+        titulo: "Nueva Nota de Crédito",
+        clientes: clientes,
+        productos: productos,
+        facturas: facturas,
+        error: error.message,
+        datos: req.body,
+      });
+    }
+  },
+
+  // Ver detalle
+  ver: async (req, res) => {
+    try {
+      const nota = await NotaDeCredito.findById(req.params.id);
+      if (!nota) {
+        return res.status(404).send("Nota de crédito no encontrada");
+      }
+
+      // Asegurar que empresaInfo tenga todos los campos necesarios
+      if (!nota.empresaInfo) {
+        nota.empresaInfo = {
+          cuit: "30-12345678-1",
+          razonSocial: "TodoStock S.A.",
+          direccion: "Av. Libertador 1000 - Avellaneda",
+          localidad: "Buenos Aires",
+          telefono: "+54 11 2222 3333",
+          ingBrutos: "123456789",
+          inicioActividades: new Date("2020-01-01"),
+        };
+      }
+
+      res.render("notas-credito/ver", {
+        titulo: `Nota de Crédito ${nota.numero}`,
+        nota: nota,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Error al mostrar nota de crédito");
+    }
+  },
+
+  // Aplicar nota (cambiar estatus)
+  aplicar: async (req, res) => {
+    try {
+      const nota = await NotaDeCredito.findById(req.params.id);
+      if (nota && nota.estatus !== "Aplicada" && nota.estatus !== "Anulada") {
+        nota.estatus = "Aplicada";
+        await nota.save();
+        req.session.mensajeExito = "Nota de crédito aplicada exitosamente";
+      }
+      res.redirect("/notas-credito");
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Error al aplicar nota de crédito");
+    }
+  },
+
+  // Anular nota
+  anular: async (req, res) => {
+    try {
+      const nota = await NotaDeCredito.findById(req.params.id);
+
+      if (nota && nota.estatus !== "Anulada") {
+        // Revertir saldo del cliente si estaba aplicada
+        if (nota.estatus === "Aplicada") {
+          const cliente = await Cliente.findOne({ id: nota.clienteId });
+          if (cliente) {
+            let saldoActual = parseFloat(cliente.saldoCuentaCorriente) || 0;
+            // Revertir: volver a aumentar el saldo (la nota había disminuido)
+            cliente.saldoCuentaCorriente = saldoActual + nota.total;
+            await cliente.save();
+          }
+        }
+
+        nota.estatus = "Anulada";
+        await nota.save();
+      }
+
+      res.redirect("/notas-credito");
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Error al anular nota de crédito");
+    }
+  },
+
+  // Eliminar nota
+  eliminar: async (req, res) => {
+    try {
+      const nota = await NotaDeCredito.findById(req.params.id);
+
+      // Revertir saldo del cliente si estaba aplicada
+      if (nota && nota.estatus === "Aplicada") {
+        const cliente = await Cliente.findOne({ id: nota.clienteId });
+        if (cliente) {
+          let saldoActual = parseFloat(cliente.saldoCuentaCorriente) || 0;
+          cliente.saldoCuentaCorriente = saldoActual + nota.total;
+          await cliente.save();
+        }
+      }
+
+      await NotaDeCredito.findByIdAndDelete(req.params.id);
+      res.redirect("/notas-credito");
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Error al eliminar nota de crédito");
+    }
+  },
+
+  // API para buscar productos
+  buscarProductos: async (req, res) => {
+    try {
+      const termino = req.query.q || "";
+      const productos = await StockService.buscarProductos(termino);
+      res.json({ success: true, productos });
+    } catch (error) {
+      res.json({ success: false, error: error.message });
+    }
+  },
+};
+
+module.exports = notaDeCreditoController;
