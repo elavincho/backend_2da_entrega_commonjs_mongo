@@ -245,6 +245,7 @@ const ordenPagoRoutes = require("./routes/ordenPagoRoutes");
 const facturaProveedorRoutes = require("./routes/facturaProveedorRoutes");
 const authRoutes = require("./routes/authRoutes");
 const adminRoutes = require("./routes/adminRoutes");
+const facturaClienteRoutes = require("./routes/facturaClienteRoutes");
 
 // Conectar a MongoDB
 connectDB();
@@ -301,6 +302,7 @@ app.use("/ordenes-pago", requireLogin, ordenPagoRoutes);
 app.use("/facturas-proveedor", requireLogin, facturaProveedorRoutes);
 app.use("/home", requireLogin, homeRoutes);
 app.use("/admin", requireLogin, adminRoutes);
+app.use("/facturas-cliente", requireLogin, facturaClienteRoutes);
 
 // Redireccionar raíz a login o dashboard
 app.get("/", (req, res) => {

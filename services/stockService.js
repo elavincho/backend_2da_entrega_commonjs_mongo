@@ -80,9 +80,7 @@ class StockService {
           mensaje: `Producto "${detalle.descripcion}" creado automáticamente (ID: ${nuevoId})`,
         });
 
-        console.log(
-          `Producto creado: ${detalle.descripcion} (ID: ${nuevoId})`,
-        );
+        console.log(`Producto creado: ${detalle.descripcion} (ID: ${nuevoId})`);
       } else {
         resultados.push({
           exito: false,
@@ -171,9 +169,123 @@ class StockService {
   static async obtenerTodosProductos() {
     return await Producto.find().sort({ nombre: 1 });
   }
+
+  // Descontar stock desde una factura de cliente
+  static async descontarStockDesdeFacturaCliente(factura) {
+    const resultados = [];
+
+    for (const detalle of factura.detalles) {
+      let producto = null;
+
+      // Buscar por ID si se proporcionó
+      if (detalle.productoId) {
+        producto = await Producto.findOne({ id: detalle.productoId });
+      }
+
+      // Si no se encontró por ID, buscar por código
+      if (!producto && detalle.codigo) {
+        const codigoNumero = parseInt(detalle.codigo);
+        if (!isNaN(codigoNumero)) {
+          producto = await Producto.findOne({ id: codigoNumero });
+        }
+
+        // Si no, buscar por nombre exacto
+        if (!producto && detalle.descripcion) {
+          producto = await Producto.findOne({
+            nombre: { $regex: `^${detalle.descripcion}$`, $options: "i" },
+          });
+        }
+      }
+
+      if (producto) {
+        // Verificar stock suficiente
+        if (producto.stockActual < detalle.cantidad) {
+          throw new Error(
+            `Stock insuficiente para el producto "${producto.nombre}". Stock actual: ${producto.stockActual}, Requerido: ${detalle.cantidad}`,
+          );
+        }
+
+        // Descontar stock del producto existente
+        const stockAnterior = producto.stockActual;
+        producto.stockActual -= detalle.cantidad;
+        await producto.save();
+
+        resultados.push({
+          exito: true,
+          accion: "descontado",
+          productoId: producto.id,
+          nombre: producto.nombre,
+          stockAnterior,
+          stockNuevo: producto.stockActual,
+          cantidadDescontada: detalle.cantidad,
+        });
+      } else if (detalle.descripcion) {
+        // Si el producto no existe, lo creamos con stock 0 y luego descontamos?
+        // Para factura de cliente, normalmente no se crean productos nuevos
+        // Mejor mostrar error
+        resultados.push({
+          exito: false,
+          codigo: detalle.codigo,
+          descripcion: detalle.descripcion,
+          error: "Producto no encontrado en el inventario",
+        });
+
+        throw new Error(
+          `Producto "${detalle.descripcion}" no encontrado en el inventario. Verifique el catálogo.`,
+        );
+      } else {
+        resultados.push({
+          exito: false,
+          codigo: detalle.codigo,
+          descripcion: detalle.descripcion,
+          error: "No se pudo descontar stock: producto no identificado",
+        });
+      }
+    }
+
+    return resultados;
+  }
+
+  // Revertir stock desde una factura de cliente (cuando se anula)
+  static async revertirStockDesdeFacturaCliente(factura) {
+    const resultados = [];
+
+    for (const detalle of factura.detalles) {
+      let producto = null;
+
+      if (detalle.productoId) {
+        producto = await Producto.findOne({ id: detalle.productoId });
+      } else if (detalle.codigo) {
+        const codigoNumero = parseInt(detalle.codigo);
+        if (!isNaN(codigoNumero)) {
+          producto = await Producto.findOne({ id: codigoNumero });
+        }
+      }
+
+      if (producto) {
+        const stockAnterior = producto.stockActual;
+        producto.stockActual += detalle.cantidad;
+        await producto.save();
+
+        resultados.push({
+          exito: true,
+          productoId: producto.id,
+          nombre: producto.nombre,
+          stockAnterior,
+          stockNuevo: producto.stockActual,
+          cantidadRevertida: detalle.cantidad,
+        });
+      } else {
+        resultados.push({
+          exito: false,
+          descripcion: detalle.descripcion,
+          error: "Producto no encontrado para revertir stock",
+        });
+      }
+    }
+
+    return resultados;
+  }
 }
 
 module.exports = StockService;
-
-
-

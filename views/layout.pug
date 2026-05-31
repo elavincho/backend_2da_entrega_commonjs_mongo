@@ -8,7 +8,7 @@ html
 
   body
 
-    if usuario.rol === 'usuario'
+    if usuario.rol === "usuario"
       header
         nav
           ul
@@ -17,13 +17,14 @@ html
             li: a(href="/clientes") Clientes
             li: a(href="/proveedores") Proveedores
             li: a(href="/finanzas") Finanzas
-            li: a(href="/ordenes-pago") Órdenes de Pago
-            li: a(href="/facturas-proveedor") Facturas
+            //- li: a(href="/ordenes-pago") Órdenes de Pago
+            //- li: a(href="/facturas-proveedor") Facturas Proveedor
+            //- li: a(href="/facturas-cliente") Facturas Clientes            
             li(style="margin-left: auto;")
               span(style="font-size: 1rem; font-weight: bold;") #{usuario.username}
               a(href="/logout" style="margin-left: 10px; color: #f32d2d; font-weight: bold;") Cerrar Sesión
 
-    if usuario.rol === 'admin'
+    if usuario.rol === "admin"
       header
         nav
           ul
@@ -34,8 +35,9 @@ html
             li: a(href="/clientes") Clientes
             li: a(href="/proveedores") Proveedores
             li: a(href="/finanzas") Finanzas
-            li: a(href="/ordenes-pago") Órdenes de Pago
-            li: a(href="/facturas-proveedor") Facturas
+            //- li: a(href="/ordenes-pago") Órdenes de Pago
+            //- li: a(href="/facturas-proveedor") Facturas Proveedor
+            //- li: a(href="/facturas-cliente") Facturas Clientes
             li(style="margin-left: auto;")
               span(style="font-size: 1rem; font-weight: bold;") #{usuario.username}
               a(href="/logout" style="margin-left: 10px; color: #f32d2d; font-weight: bold;") Cerrar Sesión

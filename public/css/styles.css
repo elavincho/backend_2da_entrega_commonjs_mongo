@@ -784,7 +784,82 @@ td {
   }
 
 
+/* Estilos para facturas cliente (iguales a proveedores) */
+.badge-pendiente {
+    background-color: #ffc107;
+    color: #333;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
 
+.badge-pagada {
+    background-color: #28a745;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.badge-anulada {
+    background-color: #dc3545;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.badge-parcial {
+    background-color: #17a2b8;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+/* Animación para stock bajo */
+.alert-stock-bajo {
+    animation: pulse 2s infinite;
+    background-color: #fff3cd;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.8; }
+    100% { opacity: 1; }
+}
+
+/* Estilos para los botones de acciones */
+.acciones-container {
+    white-space: nowrap;
+}
+
+.acciones-container a,
+.acciones-container button {
+    display: inline-block;
+    padding: 6px 10px;
+    background-color: transparent;
+    color: #000;
+    text-decoration: none;
+    border: 1px solid #333;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    text-align: center;
+}
+
+.acciones-container button {
+    border: 1px solid #cc0000;
+    color: #cc0000;
+}
+
+.acciones-container button:hover {
+    background-color: #f8d7da;
+}
 
 
 
