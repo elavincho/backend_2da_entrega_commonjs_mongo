@@ -13,7 +13,6 @@ block contenido
           th N° Nota
           th Cliente
           th Fecha Emisión
-          //- th Conceptos
           th Total
           th Estatus
           th Acciones
@@ -23,11 +22,6 @@ block contenido
             td= nota.numero
             td= nota.clienteInfo.razonSocial
             td= nota.fechaEmision.toLocaleDateString('es-AR')
-            //- td
-            //-   if nota.conceptosDetalle && nota.conceptosDetalle.length > 0
-            //-     | #{nota.conceptosDetalle.length} concepto(s)
-            //-   else
-            //-     | #{nota.concepto.descripcion.substring(0, 30)}...
             td $ #{nota.total.toLocaleString('es-AR', {minimumFractionDigits: 2})}
             td
               span(class=`badge badge-${nota.estatus.toLowerCase()}`)= nota.estatus
