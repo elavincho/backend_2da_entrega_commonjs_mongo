@@ -1,11 +1,18 @@
 extends ../layout
 
 block contenido
-  
+
   .welcome-banner
-    h1 ¡Bienvenido, #{usuario.nombreCompleto}!
-    h2.sub-titulo Has iniciado sesión como <strong>#{usuario.rol}
+    //- h1 ¡Bienvenido, #{usuario.nombreCompleto}!
+    //- h2.sub-titulo Has iniciado sesión como <strong>#{usuario.rol}
     //- h2.sub-titulo Has iniciado sesión como <strong>Administrador
+    if usuario
+      h1 ¡Bienvenido, #{usuario.nombreCompleto}!
+      h2.sub-titulo Has iniciado sesión como <strong>#{usuario.rol}
+    else
+      h1 Error de sesión
+      p El usuario no está disponible. Por favor, 
+        a(href="/login") inicia sesión nuevamente
 
     br
 

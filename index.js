@@ -24,19 +24,36 @@ const presupuestoRoutes = require("./routes/presupuestoRoutes");
 connectDB();
 
 // ✅ Sintaxis para connect-mongo@4.6.0
+// app.use(session({
+//   secret: process.env.SESSION_SECRET || 'mi_secreto_super_seguro_2024',
+//   resave: false,
+//   saveUninitialized: false,
+//   store: MongoStore.create({  // ✅ Esta sintaxis funciona en 4.6.0
+//     mongoUrl: process.env.MONGODB_URI,
+//     ttl: 24 * 60 * 60 // 1 día
+//   }),
+//   cookie: {
+//     maxAge: 24 * 60 * 60 * 1000,
+//     httpOnly: true,
+//     secure: process.env.NODE_ENV === 'production'
+//   }
+// }));
 app.use(session({
   secret: process.env.SESSION_SECRET || 'mi_secreto_super_seguro_2024',
   resave: false,
   saveUninitialized: false,
-  store: MongoStore.create({  // ✅ Esta sintaxis funciona en 4.6.0
+  store: MongoStore.create({
     mongoUrl: process.env.MONGODB_URI,
-    ttl: 24 * 60 * 60 // 1 día
+    ttl: 24 * 60 * 60
   }),
   cookie: {
     maxAge: 24 * 60 * 60 * 1000,
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production'
-  }
+    secure: false,                     // ✅ mientras tanto, para debug
+    sameSite: 'lax'
+  },
+  proxy: true,                         // ✅ importante en Vercel
+  trustProxy: 1                        // ✅ crucial para Vercel
 }));
 
 // Middleware para pasar usuario a todas las vistas
