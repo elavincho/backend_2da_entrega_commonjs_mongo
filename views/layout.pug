@@ -1,3 +1,53 @@
+//- doctype html
+//- html
+//-   head
+//-     meta(charset="UTF-8")
+//-     meta(name="viewport" content="width=device-width, initial-scale=1.0")
+//-     title= titulo
+//-     link(rel="stylesheet" href="/css/styles.css")
+
+//-   body
+
+//-     if usuario.rol === 'usuario'
+//-       header
+//-         nav
+//-           ul
+//-             li: a(href="/dashboard") Dashboard
+//-             li: a(href="/productos") Productos
+//-             li: a(href="/clientes") Clientes
+//-             li: a(href="/proveedores") Proveedores
+//-             li: a(href="/finanzas") Finanzas
+//-             //- li: a(href="/ordenes-pago") Órdenes de Pago
+//-             //- li: a(href="/facturas-proveedor") Facturas Proveedor
+//-             //- li: a(href="/facturas-cliente") Facturas Clientes            
+//-             li(style="margin-left: auto;")
+//-               span(style="font-size: 1rem; font-weight: bold;") #{usuario.username}
+//-               a(href="/logout" style="margin-left: 10px; color: #f32d2d; font-weight: bold;") Cerrar Sesión
+
+//-     if usuario.rol === 'admin'
+//-       header
+//-         nav
+//-           ul
+//-             li: a(href="/dashboard") Dashboard
+//-             li: a(href="/admin") Usuarios
+//-             li: a(href="/facturas-proveedor/inventario") Inventario
+//-             li: a(href="/productos") Productos
+//-             li: a(href="/clientes") Clientes
+//-             li: a(href="/proveedores") Proveedores
+//-             li: a(href="/finanzas") Finanzas
+//-             //- li: a(href="/ordenes-pago") Órdenes de Pago
+//-             //- li: a(href="/facturas-proveedor") Facturas Proveedor
+//-             //- li: a(href="/facturas-cliente") Facturas Clientes
+//-             li(style="margin-left: auto;")
+//-               span(style="font-size: 1rem; font-weight: bold;") #{usuario.username}
+//-               a(href="/logout" style="margin-left: 10px; color: #f32d2d; font-weight: bold;") Cerrar Sesión
+
+//-     main
+//-       block contenido
+
+//-     footer
+//-       p &copy; 2026 elavincho - All Right Reserved
+
 doctype html
 html
   head
@@ -7,40 +57,40 @@ html
     link(rel="stylesheet" href="/css/styles.css")
 
   body
+    if usuario
+      if usuario.rol === 'usuario'
+        header
+          nav
+            ul
+              li: a(href="/dashboard") Dashboard
+              li: a(href="/productos") Productos
+              li: a(href="/clientes") Clientes
+              li: a(href="/proveedores") Proveedores
+              li: a(href="/finanzas") Finanzas
+              li(style="margin-left: auto;")
+                span(style="font-size: 1rem; font-weight: bold;") #{usuario.username}
+                a(href="/logout" style="margin-left: 10px; color: #f32d2d; font-weight: bold;") Cerrar Sesión
 
-    if usuario.rol === 'usuario'
+      if usuario.rol === 'admin'
+        header
+          nav
+            ul
+              li: a(href="/dashboard") Dashboard
+              li: a(href="/admin") Usuarios
+              li: a(href="/facturas-proveedor/inventario") Inventario
+              li: a(href="/productos") Productos
+              li: a(href="/clientes") Clientes
+              li: a(href="/proveedores") Proveedores
+              li: a(href="/finanzas") Finanzas
+              li(style="margin-left: auto;")
+                span(style="font-size: 1rem; font-weight: bold;") #{usuario.username}
+                a(href="/logout" style="margin-left: 10px; color: #f32d2d; font-weight: bold;") Cerrar Sesión
+    else
       header
         nav
           ul
-            li: a(href="/dashboard") Dashboard
-            li: a(href="/productos") Productos
-            li: a(href="/clientes") Clientes
-            li: a(href="/proveedores") Proveedores
-            li: a(href="/finanzas") Finanzas
-            //- li: a(href="/ordenes-pago") Órdenes de Pago
-            //- li: a(href="/facturas-proveedor") Facturas Proveedor
-            //- li: a(href="/facturas-cliente") Facturas Clientes            
-            li(style="margin-left: auto;")
-              span(style="font-size: 1rem; font-weight: bold;") #{usuario.username}
-              a(href="/logout" style="margin-left: 10px; color: #f32d2d; font-weight: bold;") Cerrar Sesión
-
-    if usuario.rol === 'admin'
-      header
-        nav
-          ul
-            li: a(href="/dashboard") Dashboard
-            li: a(href="/admin") Usuarios
-            li: a(href="/facturas-proveedor/inventario") Inventario
-            li: a(href="/productos") Productos
-            li: a(href="/clientes") Clientes
-            li: a(href="/proveedores") Proveedores
-            li: a(href="/finanzas") Finanzas
-            //- li: a(href="/ordenes-pago") Órdenes de Pago
-            //- li: a(href="/facturas-proveedor") Facturas Proveedor
-            //- li: a(href="/facturas-cliente") Facturas Clientes
-            li(style="margin-left: auto;")
-              span(style="font-size: 1rem; font-weight: bold;") #{usuario.username}
-              a(href="/logout" style="margin-left: 10px; color: #f32d2d; font-weight: bold;") Cerrar Sesión
+            li: a(href="/login") Iniciar Sesión
+            li: a(href="/register") Registrarse
 
     main
       block contenido
