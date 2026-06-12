@@ -8,7 +8,7 @@ html
 
   body
 
-    if usuario.rol === "usuario"
+    if usuario.rol === 'usuario'
       header
         nav
           ul
@@ -24,7 +24,7 @@ html
               span(style="font-size: 1rem; font-weight: bold;") #{usuario.username}
               a(href="/logout" style="margin-left: 10px; color: #f32d2d; font-weight: bold;") Cerrar Sesión
 
-    if usuario.rol === "admin"
+    if usuario.rol === 'admin'
       header
         nav
           ul
