@@ -3,9 +3,6 @@ extends ../layout
 block contenido
 
   .welcome-banner
-    //- h1 ¡Bienvenido, #{usuario.nombreCompleto}!
-    //- h2.sub-titulo Has iniciado sesión como <strong>#{usuario.rol}
-    //- h2.sub-titulo Has iniciado sesión como <strong>Administrador
     if usuario
       h1 ¡Bienvenido, #{usuario.nombreCompleto}!
       h2.sub-titulo Has iniciado sesión como <strong>#{usuario.rol}
